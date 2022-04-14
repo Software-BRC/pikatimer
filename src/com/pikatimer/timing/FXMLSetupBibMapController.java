@@ -61,7 +61,7 @@ import javafx.stage.WindowEvent;
  * @author John Garner <segfaultcoredump@gmail.com>
  */
 public class FXMLSetupBibMapController  {
-
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     @FXML private TableView<ChipMap> bibMappingTableView;
     @FXML private TableColumn<ChipMap,String> chipTableColumn;
     @FXML private TableColumn<ChipMap,String> bibTableColumn;
@@ -159,7 +159,7 @@ public class FXMLSetupBibMapController  {
         
         // Integers only... 
         startBibTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("startChipTextField Text Changed (newValue: " + newValue + ")");
+            LOGGER.info("startChipTextField Text Changed (newValue: " + newValue + ")");
             if (!newValue.isEmpty() && ! newValue.matches("^\\d+$")) {
                     Platform.runLater(() -> { 
                     int c = startBibTextField.getCaretPosition();
@@ -169,7 +169,7 @@ public class FXMLSetupBibMapController  {
             }
         });
         endBibTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("startChipTextField Text Changed (newValue: " + newValue + ")");
+            LOGGER.info("startChipTextField Text Changed (newValue: " + newValue + ")");
             if (!newValue.isEmpty() && ! newValue.matches("^\\d+$")) {
                     Platform.runLater(() -> { 
                     int c = endBibTextField.getCaretPosition();
@@ -179,7 +179,7 @@ public class FXMLSetupBibMapController  {
             }
         });
         chipOffsetTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("startChipTextField Text Changed (newValue: " + newValue + ")");
+            LOGGER.info("startChipTextField Text Changed (newValue: " + newValue + ")");
             if (!newValue.isEmpty() && ! newValue.matches("^\\d+$")) {
                     Platform.runLater(() -> { 
                     int c = chipOffsetTextField.getCaretPosition();
@@ -192,7 +192,7 @@ public class FXMLSetupBibMapController  {
         // no leading spaces, no leading zeroes
         // we remove trailing spaces on focus lost
         chipTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("TextField Text Changed (newValue: " + newValue + ")");
+            LOGGER.info("TextField Text Changed (newValue: " + newValue + ")");
             if (!newValue.isEmpty()) {
                 
 
@@ -212,7 +212,7 @@ public class FXMLSetupBibMapController  {
         });
         
         bibTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("TextField Text Changed (newValue: " + newValue + ")");
+            LOGGER.info("TextField Text Changed (newValue: " + newValue + ")");
             if (!newValue.isEmpty()) {
                 
 
@@ -270,10 +270,10 @@ public class FXMLSetupBibMapController  {
                     
                     if(t[0].toLowerCase().contains("chip")) {
                         chipFirst.set(true);
-                        System.out.println("Found a chip -> bib file");
+                        LOGGER.info("Found a chip -> bib file");
                     } else if (t[0].toLowerCase().contains("bib")) {
                         chipFirst.set(false);
-                        System.out.println("Found a bib -> chip file");
+                        LOGGER.info("Found a bib -> chip file");
                     } else {
                         ChipMap newMapping = new ChipMap(t[0],t[1]);
                         if (chipMapList.contains(newMapping)){
@@ -283,24 +283,24 @@ public class FXMLSetupBibMapController  {
                         }
                         mapModified.setValue(true);    
                         
-                        System.out.println("No header in file");
-                        System.out.println("Mapped chip " + t[0] + " to " + t[1]);
+                        LOGGER.info("No header in file");
+                        LOGGER.info("Mapped chip " + t[0] + " to " + t[1]);
                     }
                     Files.lines(sourceFile.toPath())
                         .map(s -> s.trim())
                         .filter(s -> !s.isEmpty())
                         .skip(1)
                         .forEach(s -> {
-                            //System.out.println("readOnce read " + s); 
+                            //LOGGER.info("readOnce read " + s); 
                             String[] tokens = s.split(",", -1);
                             if (t.length != 2) return; 
                             ChipMap newMapping;
                             if(chipFirst.get()) {
                                 newMapping = new ChipMap(tokens[0],tokens[1]);
-                                System.out.println("Mapped chip " + tokens[0] + " to " + tokens[1]);
+                                LOGGER.info("Mapped chip " + tokens[0] + " to " + tokens[1]);
                             } else {
                                 newMapping = new ChipMap(tokens[1],tokens[0]);
-                                System.out.println("Mapped chip " + tokens[1] + " to " + tokens[0]);
+                                LOGGER.info("Mapped chip " + tokens[1] + " to " + tokens[0]);
                             }
                             
                             if (chipMapList.contains(newMapping)){
@@ -312,7 +312,7 @@ public class FXMLSetupBibMapController  {
                             
                             
                         });
-                    System.out.println("Found a total of " + chipMapList.size() + " mappings");
+                    LOGGER.info("Found a total of " + chipMapList.size() + " mappings");
                     
                 } catch (IOException ex) {
                     Logger.getLogger(PikaRFIDFileReader.class.getName()).log(Level.SEVERE, null, ex);
@@ -352,7 +352,7 @@ public class FXMLSetupBibMapController  {
             }
             
         } catch (Exception ex){
-            System.out.println(ex.getMessage());
+            LOGGER.info(ex.getMessage());
         }
         startBibTextField.setText("");
         endBibTextField.setText("");
@@ -391,9 +391,9 @@ public class FXMLSetupBibMapController  {
         
         Task reprocessAllRawTimes = new Task<Void>() {
             @Override public Void call() {
-                System.out.println("Starting reprocessAllRawTimes()");
+                LOGGER.info("Starting reprocessAllRawTimes()");
                 timingDAO.reprocessAllRawTimes();
-                System.out.println("Done with reprocessAllRawTimes()");
+                LOGGER.info("Done with reprocessAllRawTimes()");
                 return null;
             }
         };
@@ -430,11 +430,11 @@ public class FXMLSetupBibMapController  {
     private void updateFilterPredicate(){
         filteredchipMapList.setPredicate(chipMap -> {
             // If filter text is empty, display all persons.
-           // System.out.println("filteredParticpantsList.predicateProperty changing...");
-            //System.out.println("...filterField="+filterField.textProperty().getValue());
-            //System.out.println("...searchWaveComboBox=" + searchWaveComboBox.getCheckModel().getCheckedItems().size());
+           // LOGGER.info("filteredParticpantsList.predicateProperty changing...");
+            //LOGGER.info("...filterField="+filterField.textProperty().getValue());
+            //LOGGER.info("...searchWaveComboBox=" + searchWaveComboBox.getCheckModel().getCheckedItems().size());
             if (searchTextField.textProperty().getValueSafe().isEmpty()) {
-                //System.out.println("...both are empty: true");
+                //LOGGER.info("...both are empty: true");
                 return true;
             }
 
@@ -478,7 +478,7 @@ public class FXMLSetupBibMapController  {
         
         @Override
         public boolean equals(Object obj) {
-        //System.out.println("Wave.equals called for " + this.IDProperty.toString());
+        //LOGGER.info("Wave.equals called for " + this.IDProperty.toString());
         if (obj == null) {
             return false;
         }
@@ -486,7 +486,7 @@ public class FXMLSetupBibMapController  {
             return false;
         }
         final ChipMap other = (ChipMap) obj;
-            //System.out.println("Wave.equals true");
+            //LOGGER.info("Wave.equals true");
         
         return Objects.equals(this.chipProperty.getValue(), other.chipProperty.getValue());
     }

@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -50,6 +51,7 @@ import org.hibernate.annotations.GenericGenerator;
 @DynamicUpdate
 @Table(name="overrides")
 public class TimeOverride {
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     private Integer timeOverrideID;
     private String chip;
     private Integer splitId;
@@ -90,7 +92,7 @@ public class TimeOverride {
         if (ot != null) {
             overrideType = ot;
         } else {
-            System.out.println("setOverrideType called with NULL!!!");
+            LOGGER.info("setOverrideType called with NULL!!!");
         }
     }
 
@@ -151,11 +153,11 @@ public class TimeOverride {
     
     @Column(name="split_id") 
     public Integer getSplitId() {
-        //System.out.println("RawTimeData: Returning timingLocationInputId of " + timingLocationInputId);
+        //LOGGER.info("RawTimeData: Returning timingLocationInputId of " + timingLocationInputId);
         return splitId;
     }
     public void setSplitId(Integer i) {
-        //System.out.println("RawTimeData: Setting timingLocationInputId to " + i);
+        //LOGGER.info("RawTimeData: Setting timingLocationInputId to " + i);
         splitId = i;
         splitIdProperty.set(i);
     }

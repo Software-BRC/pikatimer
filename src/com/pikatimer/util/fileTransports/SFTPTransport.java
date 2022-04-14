@@ -49,6 +49,7 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author jcgarner
  */
+/*
 public class SFTPTransport implements FileTransport{
     
     String basePath;
@@ -409,3 +410,4 @@ public class SFTPTransport implements FileTransport{
         }
     }
 }
+*/

@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -44,7 +45,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
  * @author John Garner <segfaultcoredump@gmail.com>
  */
 public class OverallCSV implements RaceReportType{
-   
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     Race race;
     
         // Defaults
@@ -87,7 +88,7 @@ public class OverallCSV implements RaceReportType{
     
     @Override
     public String process(List<ProcessedResult> prList, RaceReport rr) {
-        System.out.println("OverallCSV.process() Called... ");
+        LOGGER.info("OverallCSV.process() Called... ");
         String report = new String();
         
         race = rr.getRace();

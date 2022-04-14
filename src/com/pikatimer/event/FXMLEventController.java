@@ -63,7 +63,7 @@ import javafx.util.StringConverter;
  * @author jcgarner
  */
 public class FXMLEventController  {
-    
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     private final Event event = Event.getInstance();
     private EventDAO eDAO; 
     private FXMLLoader raceDetailsLoader ;
@@ -96,19 +96,19 @@ public class FXMLEventController  {
    @FXML
     protected void initialize() {
         // TODO
-        System.out.println("FXMLpikaController initialize called...");
+        LOGGER.info("FXMLpikaController initialize called...");
         
         
         
         eventTitle.setText(event.getEventName());
-        System.out.println("FXMLpikaController initialize set title");
+        LOGGER.info("FXMLpikaController initialize set title");
         
         
         
         //Watch for text changes... Because setOnInputMethodTextChanged does not work :-( 
         eventTitle.focusedProperty().addListener((ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) -> {
             if (!newPropertyValue) {
-                System.out.println("Textfield out focus");
+                LOGGER.info("Textfield out focus");
                 if ( ! eventTitle.getText().equals(event.getEventName()) ) {
                     setEventTitle();
                 }
@@ -117,7 +117,7 @@ public class FXMLEventController  {
         
         // Use this if you whant keystroke by keystroke monitoring.... 
         //        eventTitle.textProperty().addListener((observable, oldValue, newValue) -> {
-        //            //System.out.println("TextField Text Changed (newValue: " + newValue + ")");
+        //            //LOGGER.info("TextField Text Changed (newValue: " + newValue + ")");
         //            event.setEventName(newValue);
         //            updateEvent();
         //        });
@@ -132,7 +132,7 @@ public class FXMLEventController  {
         eventDate.setOnAction(this::setEventDate);
         //eventDate.onInputMethodTextChangedProperty()
         //eventDate.onInputMethodTextChanged(this::setEventDate);
-        System.out.println("FXMLpikaController initialize set date");
+        LOGGER.info("FXMLpikaController initialize set date");
         
         //event.multipleRacesProperty().bind(singleRaceCheckBox.selectedProperty());
         
@@ -172,7 +172,7 @@ public class FXMLEventController  {
                 if (t != null) {
                 return ((TimingLocation)t).toString(); 
                 } else {
-                    System.out.println("Timing StringConverter toString null object detected.");
+                    LOGGER.info("Timing StringConverter toString null object detected.");
                     return "";
                 }
             }
@@ -180,7 +180,7 @@ public class FXMLEventController  {
         ));	
         
         timingLocListView.setOnEditCommit((ListView.EditEvent<TimingLocation> t) -> {
-            System.out.println("setOnEditCommit " + t.getIndex());
+            LOGGER.info("setOnEditCommit " + t.getIndex());
             if(t.getIndex() < t.getSource().getItems().size()) {
                 TimingLocation tl = t.getSource().getItems().get(t.getIndex()); 
                 if (t.getNewValue().toString().isEmpty()) {
@@ -192,14 +192,14 @@ public class FXMLEventController  {
                     timingLocationDAO.updateTimingLocation(tl);
                 }
             } else {
-                System.out.println("Timing setOnEditCommit event out of index: " + t.getIndex());
+                LOGGER.info("Timing setOnEditCommit event out of index: " + t.getIndex());
             }
             timingLocAddButton.requestFocus();
             timingLocAddButton.setDefaultButton(true);
         });
 
         timingLocListView.setOnEditCancel((ListView.EditEvent<TimingLocation> t) ->{
-            System.out.println("setOnEditCancel " + t.getIndex());
+            LOGGER.info("setOnEditCancel " + t.getIndex());
             if (t.getIndex() >= 0 && t.getIndex() < t.getSource().getItems().size()) {
                 TimingLocation tl = t.getSource().getItems().get(t.getIndex());
                 if (tl.getLocationName().isEmpty()) {
@@ -207,7 +207,7 @@ public class FXMLEventController  {
                     timingLocationDAO.removeTimingLocation(tl);
                 }
             } else {
-                System.out.println("Timing setOnEditCancel event out of index: " + t.getIndex());
+                LOGGER.info("Timing setOnEditCancel event out of index: " + t.getIndex());
             }
             timingLocAddButton.requestFocus();
             timingLocAddButton.setDefaultButton(true);
@@ -280,10 +280,10 @@ public class FXMLEventController  {
              raceTableView.getSelectionModel().getSelectedItems().forEach(System.out::println); 
              ObservableList<Race> selectedRaces = raceTableView.getSelectionModel().getSelectedItems();
              if ( selectedRaces.size() == 0 ) {
-                System.out.println("Nothing Selected");
+                LOGGER.info("Nothing Selected");
                 raceDetailsController.selectRace(null);
              } else {
-                System.out.println(selectedRaces.get(0).getRaceName());
+                LOGGER.info(selectedRaces.get(0).getRaceName());
                 raceDetailsController.selectRace(selectedRaces.get(0));
              }
          });
@@ -294,7 +294,7 @@ public class FXMLEventController  {
          
          
          
-        System.out.println("FXMLpikaController initialized!");
+        LOGGER.info("FXMLpikaController initialized!");
         
     }
     
@@ -335,7 +335,7 @@ public class FXMLEventController  {
 //    protected void toggleSingleRaceCheckBox(ActionEvent fxevent) {
 //        // are we enabled or disabled?
 //        if ( singleRaceCheckBox.isSelected() ) {
-//            System.out.println("Only one race...");
+//            LOGGER.info("Only one race...");
 //            
 //            // load the single race fxml into the singleRacePane; 
 //            
@@ -349,7 +349,7 @@ public class FXMLEventController  {
 //            }
 //        } else {
 //            // More than one race. Show a placeholder text and open the Races Tab
-//            System.out.println("More than one race...");
+//            LOGGER.info("More than one race...");
 //            singleRacePane.getChildren().clear();
 //            singleRacePane.getChildren().add(new Label("Multiple Races"));
 //            Tab raceTab = new Tab("Races");
@@ -398,7 +398,7 @@ public class FXMLEventController  {
         t.setLocationName("New Timing Location");
         
         timingLocationDAO.addTimingLocation(t);
-        System.out.println("Setting the timingLocListView.edit to " + timingLocationList.size() + " " + timingLocationList.indexOf(t));
+        LOGGER.info("Setting the timingLocListView.edit to " + timingLocationList.size() + " " + timingLocationList.indexOf(t));
         timingLocListView.getSelectionModel().select(timingLocationList.indexOf(t));
         timingLocListView.edit(timingLocationList.indexOf(t));
         
@@ -461,7 +461,7 @@ public class FXMLEventController  {
         r.setRaceDistance(new BigDecimal("5.0")); 
         r.setRaceDistanceUnits(Unit.KILOMETERS);
         raceDAO.addRace(r);
-        System.out.println("Adding a new race. New Size =" + raceList.size() + " New Race Index=" + raceList.indexOf(r));
+        LOGGER.info("Adding a new race. New Size =" + raceList.size() + " New Race Index=" + raceList.indexOf(r));
         Platform.runLater(() -> {raceTableView.getSelectionModel().select(raceList.indexOf(r));});
         //timingLocListView.edit(timingLocationList.indexOf(t));
         if (raceList.size() > 1) { 
@@ -492,7 +492,7 @@ public class FXMLEventController  {
             x.getWaveIDs().forEach(w -> {
                 if (RaceDAO.getInstance().getWaveByID(w).getRace().equals(r)) {
                     assignedRunners.setValue(Boolean.TRUE);
-                    //System.out.println("Race " + RaceDAO.getInstance().getWaveByID(w).getRace().getRaceName() + " is in use by " + x.fullNameProperty().getValueSafe());
+                    //LOGGER.info("Race " + RaceDAO.getInstance().getWaveByID(w).getRace().getRaceName() + " is in use by " + x.fullNameProperty().getValueSafe());
                 }
             });
         });

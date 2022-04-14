@@ -22,6 +22,7 @@ import com.pikatimer.util.Unit;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Objects;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
@@ -61,7 +62,7 @@ import org.hibernate.annotations.GenericGenerator;
 @DynamicUpdate
 @Table(name="race_split")
 public class Split {
-    
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     //private final Wave self; 
     private final IntegerProperty IDProperty = new SimpleIntegerProperty(); // split_id
     private Race race; // race_id
@@ -114,7 +115,7 @@ public class Split {
         return splitPosition.getValue(); 
     }
     public void setPosition(Integer id) {
-        System.out.println("Split.setPosition: was " + splitPosition + " now " + id);
+        LOGGER.info("Split.setPosition: was " + splitPosition + " now " + id);
         splitPosition.setValue(id);
     }
     public IntegerProperty splitPositionProperty() {
@@ -145,13 +146,13 @@ public class Split {
     }
     public void setTimingLocation(TimingLocation l) {
         if (l != null) {
-            System.out.println("Split.setTimingLocation: " + l.getID());
+            LOGGER.info("Split.setTimingLocation: " + l.getID());
             splitLocation=l;
             splitLocationString.unbind();
             splitLocationString.bind(l.LocationNameProperty()); 
-            System.out.println("Split.setTimingLocation: " + splitLocationString.getValueSafe()); 
+            LOGGER.info("Split.setTimingLocation: " + splitLocationString.getValueSafe()); 
         } else {
-            System.out.println("Split.setTimingLocation: null"); 
+            LOGGER.info("Split.setTimingLocation: null"); 
         }
     }
     public StringProperty timingLocationProperty() {
@@ -180,11 +181,11 @@ public class Split {
     public void setSplitMinTime(Long c) {
         if(c != null) {
             //Fix this to watch for parse exceptions
-            System.out.println("splitMinTimeProperty: was :" + splitMinTimeProperty.getValue().toString());
+            LOGGER.info("splitMinTimeProperty: was :" + splitMinTimeProperty.getValue().toString());
             splitMinTime = Duration.ofNanos(c);
             splitMinTimeProperty.setValue(splitMinTime);
             Platform.runLater(() -> {splitMinTimeProperty.setValue(splitMinTime);});
-            System.out.println("splitMinTimeProperty: now :" + splitMinTimeProperty.getValue().toString());
+            LOGGER.info("splitMinTimeProperty: now :" + splitMinTimeProperty.getValue().toString());
         }
     }
     public Duration splitMinTimeDuration(){

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -52,7 +53,7 @@ import org.controlsfx.control.ToggleSwitch;
  * @author jcgarner
  */
 public class FXMLResultOutputController {
-
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     @FXML GridPane baseGridPane;
     @FXML ChoiceBox<ReportTypes> outputTypeChoiceBox;
     
@@ -116,7 +117,7 @@ public class FXMLResultOutputController {
     public void setRaceReport(RaceReport r){
         //This should only be called once
         if (thisRaceReport != null) {
-            System.out.println("setRaceReport Called more than once!");
+            LOGGER.info("setRaceReport Called more than once!");
             return;
         }
         thisRaceReport=r;
@@ -465,14 +466,14 @@ public class FXMLResultOutputController {
     }
     
     public void removeRaceReport(ActionEvent fxevent){
-        System.out.println("FXMLREsultOutputController baseGridPane is a " +  baseGridPane.getParent().getClass().getName());
+        LOGGER.info("FXMLREsultOutputController baseGridPane is a " +  baseGridPane.getParent().getClass().getName());
 
         boolean remove = ((VBox) baseGridPane.getParent()).getChildren().remove(baseGridPane);
         if (thisRaceReport != null && thisRaceReport.getRace() != null) {
             thisRaceReport.getRace().removeRaceReport(thisRaceReport);
             resultsDAO.removeRaceReport(thisRaceReport);
         } else {
-            System.out.println("Either thisRaceReport is null or thisRaceReport.getRace() is null!");
+            LOGGER.info("Either thisRaceReport is null or thisRaceReport.getRace() is null!");
         }
        
     }
@@ -552,7 +553,7 @@ public class FXMLResultOutputController {
     }
 
     private void individualAwardTracker(){
-        System.out.println("ResultOutputController::individualAwardTracker() called...");
+        LOGGER.info("ResultOutputController::individualAwardTracker() called...");
         if (selectedIndividualAwardList == null) {
             selectedIndividualAwardList = new ArrayList();
                        
@@ -561,9 +562,9 @@ public class FXMLResultOutputController {
             
             customAwardsCheckComboBox.getCheckModel().getCheckedItems().addListener((ListChangeListener.Change<? extends AwardCategory> change) -> {
                 
-                System.out.println("ResultOutputController::customAttributesCheckComboBox(changeListener) fired...");
+                LOGGER.info("ResultOutputController::customAttributesCheckComboBox(changeListener) fired...");
                 if (individualAwardUpdateInProgress.getValue()) return;
-                System.out.println("Changes to process...");
+                LOGGER.info("Changes to process...");
                 while (change.next() ) {
                     change.getRemoved().forEach(removed -> {
                         
@@ -575,7 +576,7 @@ public class FXMLResultOutputController {
                 }
                 resultsDAO.saveRaceReport(thisRaceReport);
                 
-                //System.out.println(waveComboBox.getCheckModel().getCheckedItems());
+                //LOGGER.info(waveComboBox.getCheckModel().getCheckedItems());
             });
         }
         
@@ -591,7 +592,7 @@ public class FXMLResultOutputController {
         }).collect(Collectors.toList());
         customAwardsCheckComboBox.getCheckModel().clearChecks();
         selectedIndividualAwardList.forEach (t -> {
-            System.out.println("Checking the checkbox for " + t.toString());
+            LOGGER.info("Checking the checkbox for " + t.toString());
             customAwardsCheckComboBox.getCheckModel().check(t);
         });
         individualAwardUpdateInProgress.setValue(false);
@@ -599,7 +600,7 @@ public class FXMLResultOutputController {
     
         
     private void customAttributeTracker() {
-        System.out.println("ResultOutputController::customAttributesTracker() called...");
+        LOGGER.info("ResultOutputController::customAttributesTracker() called...");
         if (selectedCustomAttributesList == null) {
             selectedCustomAttributesList = new ArrayList();
                        
@@ -612,9 +613,9 @@ public class FXMLResultOutputController {
             
             customAttributesCheckComboBox.getCheckModel().getCheckedItems().addListener((ListChangeListener.Change<? extends CustomAttribute> change) -> {
                 
-                System.out.println("ResultOutputController::customAttributesCheckComboBox(changeListener) fired...");
+                LOGGER.info("ResultOutputController::customAttributesCheckComboBox(changeListener) fired...");
                 if (customAttributeUpdateInProgress.getValue()) return;
-                System.out.println("Changes to process...");
+                LOGGER.info("Changes to process...");
                 while (change.next() ) {
                     change.getRemoved().forEach(removed -> {
                         
@@ -626,7 +627,7 @@ public class FXMLResultOutputController {
                 }
                 resultsDAO.saveRaceReport(thisRaceReport);
                 
-                //System.out.println(waveComboBox.getCheckModel().getCheckedItems());
+                //LOGGER.info(waveComboBox.getCheckModel().getCheckedItems());
             });
         }
         
@@ -642,7 +643,7 @@ public class FXMLResultOutputController {
         }).collect(Collectors.toList());
         customAttributesCheckComboBox.getCheckModel().clearChecks();
         selectedCustomAttributesList.forEach (t -> {
-            System.out.println("Checking the checkbox for " + t.toString());
+            LOGGER.info("Checking the checkbox for " + t.toString());
             customAttributesCheckComboBox.getCheckModel().check(t);
         });
         customAttributeUpdateInProgress.setValue(false);

@@ -33,6 +33,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -76,6 +77,7 @@ import org.controlsfx.control.table.TableRowExpanderColumn;
  * @author jcgarner
  */
 public class FXMLRaceDetailsController {
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     private RaceDAO raceDAO; 
     
     @FXML private HBox raceNameHBox;
@@ -156,9 +158,9 @@ public class FXMLRaceDetailsController {
         distanceUnitChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Unit>() {
             @Override
             public void changed(ObservableValue<? extends Unit> observableValue, Unit o, Unit n) {
-                System.out.println("distanceUnitChoiceBox event");
+                LOGGER.info("distanceUnitChoiceBox event");
                 if (!n.equals(selectedRace.getRaceDistanceUnits())){
-                    System.out.println("distanceUnitChoiceBox event triggered update...");
+                    LOGGER.info("distanceUnitChoiceBox event triggered update...");
                     selectedRace.setRaceDistanceUnits(n);
                     updateRaceCutoffPace();
                     raceDAO.updateRace(selectedRace);  
@@ -168,7 +170,7 @@ public class FXMLRaceDetailsController {
         
         raceNameTextField.focusedProperty().addListener((ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) -> {
             if (!newPropertyValue) {
-                System.out.println("raceNameTextField out focus");
+                LOGGER.info("raceNameTextField out focus");
                 if ( ! raceNameTextField.getText().equals(selectedRace.getRaceName()) ) {
                     updateRaceName(null);
                 }
@@ -177,7 +179,7 @@ public class FXMLRaceDetailsController {
         
         // Use this if you whant keystroke by keystroke monitoring.... Reject any non digit attempts
         raceDistanceTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-                    //System.out.println("TextField Text Changed (newValue: " + newValue + ")");
+                    //LOGGER.info("TextField Text Changed (newValue: " + newValue + ")");
                 try {
                     if (!newValue.isEmpty()) {
                         new BigDecimal(raceDistanceTextField.getText());
@@ -201,7 +203,7 @@ public class FXMLRaceDetailsController {
         // but only update when the textfield focus changes. 
         raceDistanceTextField.focusedProperty().addListener((ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) -> {
             if (!newPropertyValue) {
-                System.out.println("raceDistanceTextField out focus");
+                LOGGER.info("raceDistanceTextField out focus");
                 if ( ! raceDistanceTextField.getText().equals(selectedRace.getRaceDistance().toPlainString()) ) {
                     updateRaceDistance();
                 }
@@ -212,7 +214,7 @@ public class FXMLRaceDetailsController {
         // Race (wave) Time stuff
         // Use this if you whant keystroke by keystroke monitoring.... Reject any non digit attempts
         raceStartTimeTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-                    //System.out.println("TextField Text Changed (newValue: " + newValue + ")");
+                    //LOGGER.info("TextField Text Changed (newValue: " + newValue + ")");
             if (newValue.matches("([3-9]|[012]:)")) {
                 //Integer pos = raceStartTimeTextField.getCaretPosition();
                 
@@ -225,9 +227,9 @@ public class FXMLRaceDetailsController {
                     newValue.matches("([012]|[01][0-9]|2[0-3])") || 
                     newValue.matches("([01][0-9]|2[0-3]):[0-5]?") || 
                     newValue.matches("([01][0-9]|2[0-3]):[0-5][0-9]:[0-5]?") ){
-                System.out.println("Possiblely good Race Cutoff Time (newValue: " + newValue + ")");
+                LOGGER.info("Possiblely good Race Cutoff Time (newValue: " + newValue + ")");
             } else if(newValue.matches("([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9](\\.[0-9]*)?)?") ) { // Looks like a time, lets check
-                System.out.println("Testing Race Start Time (newValue: " + newValue + ")");
+                LOGGER.info("Testing Race Start Time (newValue: " + newValue + ")");
             
                 try {
                     if (!newValue.isEmpty()) {
@@ -236,31 +238,31 @@ public class FXMLRaceDetailsController {
                     }
                 } catch (Exception e) {
                     raceStartTimeTextField.setText(oldValue);
-                    System.out.println("Exception Bad Race Start Time (newValue: " + newValue + ")");
+                    LOGGER.info("Exception Bad Race Start Time (newValue: " + newValue + ")");
                     e.printStackTrace();
                 }
             } else {
                 raceStartTimeTextField.setText(oldValue);
-                System.out.println("Bad Race Start Time (newValue: " + newValue + ")");
+                LOGGER.info("Bad Race Start Time (newValue: " + newValue + ")");
             }
                 
         });
         // but only update when the textfield focus changes. 
         raceStartTimeTextField.focusedProperty().addListener((ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) -> {
             if (!newPropertyValue) {
-                System.out.println("raceStartTimeTextField out focus");
+                LOGGER.info("raceStartTimeTextField out focus");
                 try {
                     if (!raceStartTimeTextField.getText().isEmpty()) {
                         LocalTime.parse(raceStartTimeTextField.getText(), DateTimeFormatter.ISO_LOCAL_TIME );
                     }
                 } catch (Exception e) {
                     raceStartTimeTextField.setText(raceWaves.get(0).getWaveStart());
-                    System.out.println("Bad Race Start Time (newValue: " + raceStartTimeTextField.getText() + ")");
+                    LOGGER.info("Bad Race Start Time (newValue: " + raceStartTimeTextField.getText() + ")");
                 }
                 if ( ! raceStartTimeTextField.getText().equals(raceWaves.get(0).getWaveStart()) ) {
                     updateRaceStartTime();
                 } else {
-                    System.out.println("Unchaged Race Start, not saving: \"" + raceWaves.get(0).getWaveStart() + "\" vs " + raceStartTimeTextField.getText() );
+                    LOGGER.info("Unchaged Race Start, not saving: \"" + raceWaves.get(0).getWaveStart() + "\" vs " + raceStartTimeTextField.getText() );
                 }
             } else {
                 
@@ -282,7 +284,7 @@ public class FXMLRaceDetailsController {
         waveStartTimeTableColumn.setCellFactory(TextFieldTableCell.forTableColumn());     
         waveStartTimeTableColumn.setOnEditCommit((CellEditEvent<Wave, String> t) -> {
             Wave w = (Wave) t.getTableView().getItems().get(t.getTablePosition().getRow());
-            System.out.println("waveStartTimeTextField out focus");
+            LOGGER.info("waveStartTimeTextField out focus");
             if (t.getNewValue().isEmpty()) {
                 w.setWaveStart(t.getOldValue());
             }
@@ -351,22 +353,22 @@ public class FXMLRaceDetailsController {
         // Use this if you whant keystroke by keystroke monitoring.... Reject any non digit attempts
 //        raceCutoffTimeTextField.textProperty().addListener((observable, oldValue, newValue) -> {
 //            if ( newValue.isEmpty() || newValue.matches("([0-9]*|[0-9]*:[0-5]?)") ) {
-//                System.out.println("Possiblely good Race Cutoff Time (newValue: " + newValue + ")");
+//                LOGGER.info("Possiblely good Race Cutoff Time (newValue: " + newValue + ")");
 //            } else if(newValue.matches("[0-9]*:[0-5][0-9]") ) { // Looks like a HH:MM time, lets check
-//                System.out.println("Looks like a valid Race Cutoff Time (newValue: " + newValue + ")");
+//                LOGGER.info("Looks like a valid Race Cutoff Time (newValue: " + newValue + ")");
 //            } else {
 //                raceCutoffTimeTextField.setText(oldValue);
-//                System.out.println("Bad Race Cutoff Time (newValue: " + newValue + ")");
+//                LOGGER.info("Bad Race Cutoff Time (newValue: " + newValue + ")");
 //            }
 //                
 //        });
         raceCutoffTimeTextField.setPromptText("HH:MM:SS");
         raceCutoffTimeTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-                    //System.out.println("TextField Text Changed (newValue: " + newValue + ")");
+                    //LOGGER.info("TextField Text Changed (newValue: " + newValue + ")");
             
 
             if ( newValue.isEmpty() || newValue.matches("^[0-9]+(:?([0-5]?([0-5][0-9]?(:([0-5]?([0-5][0-9]?(\\.\\d*)?)?)?)?)?)?)?") ){
-                System.out.println("Possiblely good Time (newValue: " + newValue + ")");
+                LOGGER.info("Possiblely good Time (newValue: " + newValue + ")");
             } else {
                 Platform.runLater(() -> {
                     int c = raceCutoffTimeTextField.getCaretPosition();
@@ -375,24 +377,24 @@ public class FXMLRaceDetailsController {
                     raceCutoffTimeTextField.setText(oldValue);
                     raceCutoffTimeTextField.positionCaret(c);
                 });
-                System.out.println("Bad Cutoff Time (newValue: " + newValue + ")");
+                LOGGER.info("Bad Cutoff Time (newValue: " + newValue + ")");
             }
                 
         });
         // but only update when the textfield focus changes. 
         raceCutoffTimeTextField.focusedProperty().addListener((ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) -> {
             if (!newPropertyValue) {
-                System.out.println("raceCutoffTimeTextField out focus");
+                LOGGER.info("raceCutoffTimeTextField out focus");
 
                 if ( ! raceCutoffTimeTextField.getText().equals(selectedRace.raceCutoffProperty().getValueSafe()) ) {
                     if (DurationParser.parsable(raceCutoffTimeTextField.getText()) || raceCutoffTimeTextField.getText().isEmpty() ) {
                         updateRaceCutoffTime(); 
                     } else {
-                        System.out.println("raceCutoffTimeTextField out focus with bad time, reverting to " + selectedRace.raceCutoffProperty().getValueSafe());
+                        LOGGER.info("raceCutoffTimeTextField out focus with bad time, reverting to " + selectedRace.raceCutoffProperty().getValueSafe());
                         raceCutoffTimeTextField.setText(selectedRace.raceCutoffProperty().getValueSafe());
                     }
                 } else {
-                    System.out.println("Unchaged Cutoff time, not saving: \"" + selectedRace.raceCutoffProperty().getValueSafe() + "\" vs " + raceCutoffTimeTextField.getText() );
+                    LOGGER.info("Unchaged Cutoff time, not saving: \"" + selectedRace.raceCutoffProperty().getValueSafe() + "\" vs " + raceCutoffTimeTextField.getText() );
                 }
             } else {
                 
@@ -402,7 +404,7 @@ public class FXMLRaceDetailsController {
         // Start/Finish Stuff
         startLocationComboBox.setItems(TimingDAO.getInstance().listTimingLocations());
         startLocationComboBox.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends TimingLocation> observableValue, TimingLocation o, TimingLocation n) -> {
-            System.out.println("startLocationChoiceBox event");
+            LOGGER.info("startLocationChoiceBox event");
             Split s = selectedRace.getSplits().get(0);
             if (s.getTimingLocation().equals(n)) return;
             s.setTimingLocation(n);
@@ -411,7 +413,7 @@ public class FXMLRaceDetailsController {
         
         finishLocationComboBox.setItems(TimingDAO.getInstance().listTimingLocations());
         finishLocationComboBox.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends TimingLocation> observableValue, TimingLocation o, TimingLocation n) -> {
-            System.out.println("startLocationChoiceBox event");
+            LOGGER.info("startLocationChoiceBox event");
             Split s = selectedRace.getSplits().get(selectedRace.getSplits().size()-1);
             if (s.getTimingLocation().equals(n)) return;
             s.setTimingLocation(n);
@@ -486,7 +488,7 @@ public class FXMLRaceDetailsController {
         });
         startBibTextField.focusedProperty().addListener((ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) -> {
             if (!newPropertyValue) {
-                System.out.println("startBibTextField out focus");
+                LOGGER.info("startBibTextField out focus");
                 updateRaceStartBib();
             }
         });
@@ -496,7 +498,7 @@ public class FXMLRaceDetailsController {
         });
         endBibTextField.focusedProperty().addListener((ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) -> {
             if (!newPropertyValue) {
-                System.out.println("endBibTestField out focus");
+                LOGGER.info("endBibTestField out focus");
                 updateRaceEndBib();
             }
         });
@@ -554,9 +556,9 @@ public class FXMLRaceDetailsController {
             minTimeTextField.setPromptText("[HH:]MM:SS");
             minTimeTextField.setPrefWidth(75);
             minTimeTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-                //System.out.println("TextField Text Changed (newValue: " + newValue + ")");
+                //LOGGER.info("TextField Text Changed (newValue: " + newValue + ")");
                 if ( newValue.isEmpty() || newValue.matches("^[0-9]+(:?([0-5]?([0-5][0-9]?(:([0-5]?([0-5][0-9]?(\\.\\d*)?)?)?)?)?)?)?") ){
-                    System.out.println("Possiblely good Time (newValue: " + newValue + ")");
+                    LOGGER.info("Possiblely good Time (newValue: " + newValue + ")");
                 } else {
                     Platform.runLater(() -> {
                         int c = minTimeTextField.getCaretPosition();
@@ -565,7 +567,7 @@ public class FXMLRaceDetailsController {
                         minTimeTextField.setText(oldValue);
                         minTimeTextField.positionCaret(c);
                     });
-                    System.out.println("Bad Cutoff Time (newValue: " + newValue + ")");
+                    LOGGER.info("Bad Cutoff Time (newValue: " + newValue + ")");
                 }
             });
             minTimeHBox.getChildren().setAll(splitMinTimeLabel,minTimeTextField);
@@ -575,7 +577,7 @@ public class FXMLRaceDetailsController {
                 // Min Time Time
                 if (DurationParser.parsable(minTimeTextField.getText(),Boolean.FALSE))
                     s.setSplitMinTime(DurationParser.parse(minTimeTextField.getText(),Boolean.FALSE).toNanos());
-                else System.out.println("Min Split time of " +minTimeTextField.getText() + " is not parsable!");
+                else LOGGER.info("Min Split time of " +minTimeTextField.getText() + " is not parsable!");
                 
                 raceDAO.updateSplit(s);
                 param.toggleExpanded();
@@ -595,9 +597,9 @@ public class FXMLRaceDetailsController {
             cutoffTimeTextField.setPromptText("HH:MM:SS");
             cutoffTimeTextField.setPrefWidth(75);
             cutoffTimeTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-                //System.out.println("TextField Text Changed (newValue: " + newValue + ")");
+                //LOGGER.info("TextField Text Changed (newValue: " + newValue + ")");
                 if ( newValue.isEmpty() || newValue.matches("^[0-9]+(:?([0-5]?([0-5][0-9]?(:([0-5]?([0-5][0-9]?(\\.\\d*)?)?)?)?)?)?)?") ){
-                    System.out.println("Possiblely good Time (newValue: " + newValue + ")");
+                    LOGGER.info("Possiblely good Time (newValue: " + newValue + ")");
                 } else {
                     Platform.runLater(() -> {
                         int c = cutoffTimeTextField.getCaretPosition();
@@ -606,7 +608,7 @@ public class FXMLRaceDetailsController {
                         cutoffTimeTextField.setText(oldValue);
                         cutoffTimeTextField.positionCaret(c);
                     });
-                    System.out.println("Bad Cutoff Time (newValue: " + newValue + ")");
+                    LOGGER.info("Bad Cutoff Time (newValue: " + newValue + ")");
                 }
             });
             ToggleSwitch absoluteToggleSwitch = new ToggleSwitch("Relative to Start");
@@ -643,7 +645,7 @@ public class FXMLRaceDetailsController {
                 // Min Time Time
                 if (DurationParser.parsable(minTimeTextField.getText(),Boolean.FALSE))
                     s.setSplitMinTime(DurationParser.parse(minTimeTextField.getText(),Boolean.FALSE).toNanos());
-                else System.out.println("Min Split time of " +minTimeTextField.getText() + " is not parsable!");
+                else LOGGER.info("Min Split time of " +minTimeTextField.getText() + " is not parsable!");
                 // Cutoff Time
                 if (DurationParser.parsable(cutoffTimeTextField.getText(),Boolean.TRUE))
                     s.setSplitCutoff(DurationParser.parse(cutoffTimeTextField.getText(),Boolean.TRUE).toNanos());
@@ -750,7 +752,7 @@ public class FXMLRaceDetailsController {
         selectedRace = r;
         
         if (selectedRace != null) {
-            System.out.println("Non-Null race, populate all fields out");
+            LOGGER.info("Non-Null race, populate all fields out");
             //Setup the Race Name
             raceNameTextField.setText(selectedRace.getRaceName());
             if(raceNameTextField.disableProperty().get()) {
@@ -828,7 +830,7 @@ public class FXMLRaceDetailsController {
             });
             raceSplitsTableView.setItems(filteredSplits);
             if (raceSplits.isEmpty()) {
-                System.out.println("No Splits found, creating two...");
+                LOGGER.info("No Splits found, creating two...");
                 // no waves. Let's create one with some default values
                Split startSplit = new Split(selectedRace);
                startSplit.setSplitName("Start");
@@ -908,7 +910,7 @@ public class FXMLRaceDetailsController {
            deleteSplitButton.disableProperty().set(true);
            splitDistanceTableColumn.setEditable(false);
            raceSplitsTableViewListener=(obs, oldSelection, newSelection) -> {
-                System.out.println("Selected splits changed... now " + newSelection);
+                LOGGER.info("Selected splits changed... now " + newSelection);
                 if (newSelection != null ) {
 //                    if (newSelection.splitPositionProperty().getValue().equals(1)) {
 //                        deleteSplitButton.disableProperty().set(true);
@@ -952,13 +954,13 @@ public class FXMLRaceDetailsController {
 
         
             raceSplitsListener=(ListChangeListener.Change<? extends Split> c) -> {
-                System.out.println("Splits have changed");
+                LOGGER.info("Splits have changed");
                 if (ResultsDAO.getInstance().getResults(selectedRace.getID()).size() > 0)splitUpdateResultsButton.visibleProperty().set(true);
             };
             raceSplits.addListener(raceSplitsListener);
             
         } else {
-            System.out.println("Null race, de-populate all fields out");
+            LOGGER.info("Null race, de-populate all fields out");
 
             // blank out everything 
             // the pane will be disabled but let's not confuse things
@@ -1103,7 +1105,7 @@ public class FXMLRaceDetailsController {
             x.getWaveIDs().forEach(rw -> {
                 if (w.getID().equals(rw)) {
                     inUse.setValue(Boolean.TRUE);
-                    //System.out.println("Wave " + w.getWaveName() + " is in use by " + x.fullNameProperty().getValueSafe());
+                    //LOGGER.info("Wave " + w.getWaveName() + " is in use by " + x.fullNameProperty().getValueSafe());
                 }
             });
         });
@@ -1121,22 +1123,22 @@ public class FXMLRaceDetailsController {
     }
     
     public void addSplit(ActionEvent fxevent){
-        System.out.println("Adding a split...");
+        LOGGER.info("Adding a split...");
         Split newSplit = new Split(selectedRace);
         newSplit.setSplitName("New Split");
         newSplit.setSplitDistanceUnits(selectedRace.getRaceDistanceUnits());
         newSplit.setSplitDistance(BigDecimal.valueOf(0));
         newSplit.setTimingLocation(TimingDAO.getInstance().listTimingLocations().get(1));
-        System.out.println("   SelectedItems().size = " + raceSplitsTableView.getSelectionModel().getSelectedItems().size());
+        LOGGER.info("   SelectedItems().size = " + raceSplitsTableView.getSelectionModel().getSelectedItems().size());
         if(raceSplitsTableView.getSelectionModel().getSelectedItems().size()> 0 ) {
             Integer pos = raceSplitsTableView.getSelectionModel().getSelectedItem().getPosition(); 
             //pos++; //adjust for the hidden start split
-            System.out.println("   pos is now " + pos);
+            LOGGER.info("   pos is now " + pos);
             if (pos > 1) {
                 BigDecimal a = selectedRace.getSplits().get(pos-2).getSplitDistance();
                 BigDecimal b = selectedRace.getSplits().get(pos-1).getSplitDistance();
                 BigDecimal c = a.add( (b.subtract(a)).divide(BigDecimal.valueOf(2)) );
-                System.out.println("  new split: " + a + " and " + b + " avg: " + c);
+                LOGGER.info("  new split: " + a + " and " + b + " avg: " + c);
                 newSplit.setSplitDistance(a.add( (b.subtract(a)).divide(BigDecimal.valueOf(2)) ) );
                 newSplit.setPosition(pos);
             }
@@ -1144,7 +1146,7 @@ public class FXMLRaceDetailsController {
             BigDecimal a = selectedRace.getSplits().get(0).getSplitDistance();
                 BigDecimal b = selectedRace.getSplits().get(1).getSplitDistance();
                 BigDecimal c = a.add( (b.subtract(a)).divide(BigDecimal.valueOf(2)) );
-                System.out.println("  1st split: " + a + " and " + b + " avg: " + c);
+                LOGGER.info("  1st split: " + a + " and " + b + " avg: " + c);
                 newSplit.setSplitDistance(a.add( (b.subtract(a)).divide(BigDecimal.valueOf(2)) ) );
                 newSplit.setPosition(2); // 1st split after start
         }

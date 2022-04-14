@@ -20,6 +20,7 @@ import com.pikatimer.timing.RawTimeData;
 import com.pikatimer.util.DurationFormatter;
 import com.pikatimer.util.DurationParser;
 import java.time.Duration;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 
 /**
@@ -27,9 +28,10 @@ import javafx.application.Platform;
  * @author John Garner <segfaultcoredump@gmail.com>
  */
 public class PikaRaceTimerFileReader  extends NonTailingReader{
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     @Override
     public void process(String s) {
-        System.out.println("PikaRaceTimerFileReader::process: " + s);
+        LOGGER.info("PikaRaceTimerFileReader::process: " + s);
         // the file is either pipe or comma delimited
         // and we don't care which one since the rest of it is just numbers
         // and colons 
@@ -40,7 +42,7 @@ public class PikaRaceTimerFileReader  extends NonTailingReader{
         // 2 -- time (as a string)
         // 3+ -- it should not be here
         if (tokens.length < 2 ) {
-            System.out.println("  Unable to parse " + s);
+            LOGGER.info("  Unable to parse " + s);
             return;
         }
 
@@ -50,25 +52,25 @@ public class PikaRaceTimerFileReader  extends NonTailingReader{
         
         // one way to get rid of the header line.... 
         if (bib == null || bib.isEmpty()) { // invalid bib
-            System.out.println("  Empty bib: " + s);
+            LOGGER.info("  Empty bib: " + s);
             return;
         }
         if (bib.equals("0")) { // invalid bib
-            System.out.println("  Zero bib: " + s);
+            LOGGER.info("  Zero bib: " + s);
             return;
         }
         
         // strip any extra quotes
         String time = tokens[2].replaceAll("\"", ""); 
         
-        //System.out.println("Chip: " + chip);
-        //System.out.println("dateTime: " + dateTime);
+        //LOGGER.info("Chip: " + chip);
+        //LOGGER.info("dateTime: " + dateTime);
         
         
         
         
         Duration timestamp = offset; // We get this from the NonTailingReader class
-        System.out.println("  Offset is: " + offset);
+        LOGGER.info("  Offset is: " + offset);
 
 
         // First look for timestams without a date attached to them
@@ -87,14 +89,14 @@ public class PikaRaceTimerFileReader  extends NonTailingReader{
                 timingListener.processRead(rawTime); // process it
             } else {
                 String status = "Unable to parse the time in " + time;
-                System.out.println(status);
+                LOGGER.info(status);
                 Platform.runLater(() -> {
                     statusLabel.textProperty().setValue(status);
                 });
             }
         } else {
             String status="Unable to parse the time: " + time;
-            System.out.println(status);
+            LOGGER.info(status);
             Platform.runLater(() -> {
                 statusLabel.textProperty().setValue(status);
             });

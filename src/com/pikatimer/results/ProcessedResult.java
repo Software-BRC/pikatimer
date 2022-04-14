@@ -237,7 +237,7 @@ public class ProcessedResult implements Comparable<ProcessedResult>{
         
         // Compare based on the following:
         // dQ/DNF -> chipFinishTime -> split results -> start time -> full name (why not)
-//        System.out.println("ProcessedResult.compareTo() starting " + this.participant.getBib() + " vs " + other.participant.getBib());
+//        LOGGER.info("ProcessedResult.compareTo() starting " + this.participant.getBib() + " vs " + other.participant.getBib());
         // is somebody a DQ or DNF?
         if (participant.getDQ() && ! other.getParticipant().getDQ()) return 1;
         if (! participant.getDQ() && other.getParticipant().getDQ()) return -1;
@@ -247,25 +247,25 @@ public class ProcessedResult implements Comparable<ProcessedResult>{
         // At this point, either both are DNF/DQ's or they both are not. 
         // Sort as if they are not. 
 
-//        System.out.println("ProcessedResult.compareTo dnf/dq check done: " + this.participant.getBib() + " vs " + other.participant.getBib());
+//        LOGGER.info("ProcessedResult.compareTo dnf/dq check done: " + this.participant.getBib() + " vs " + other.participant.getBib());
         
         // Step 1: check the finish time
         if (chipFinishTime != null && other.chipFinishTime != null ) { 
             // both have finish times and they are not equal
             return chipFinishTime.compareTo(other.chipFinishTime);
         } else if (chipFinishTime == null && other.chipFinishTime != null) { // we dont have a finish yet, but they do
-//            System.out.println(participant.getBib() + " is null");
-//            System.out.println(other.participant.getBib() + " is " + other.chipFinishTime.toString());
-//            System.out.println("null vs <time>");
+//            LOGGER.info(participant.getBib() + " is null");
+//            LOGGER.info(other.participant.getBib() + " is " + other.chipFinishTime.toString());
+//            LOGGER.info("null vs <time>");
             return 1;
         } else if (other.chipFinishTime == null && chipFinishTime != null) {
-//            System.out.println(other.participant.getBib() + " is null");
-//            System.out.println(participant.getBib() + " is " + chipFinishTime.toString());
-//            System.out.println("<time> vs null");
+//            LOGGER.info(other.participant.getBib() + " is null");
+//            LOGGER.info(participant.getBib() + " is " + chipFinishTime.toString());
+//            LOGGER.info("<time> vs null");
             return -1; 
         }
         
-        //System.out.println("ProcessedResult.compareTo starting splits check " + this.participant.getBib() + " vs " + other.participant.getBib());
+        //LOGGER.info("ProcessedResult.compareTo starting splits check " + this.participant.getBib() + " vs " + other.participant.getBib());
         // check the splits in reverse order
         if(!splitTimes.keySet().isEmpty() && !other.splitTimes.keySet().isEmpty()) {
             // we both have splits... 
@@ -292,7 +292,7 @@ public class ProcessedResult implements Comparable<ProcessedResult>{
             return -1;
         }
         
-        //System.out.println("ProcessedResult.compareTo splits " + this.participant.getBib() + " vs " + other.participant.getBib());
+        //LOGGER.info("ProcessedResult.compareTo splits " + this.participant.getBib() + " vs " + other.participant.getBib());
 
         
         // check the start time
@@ -300,7 +300,7 @@ public class ProcessedResult implements Comparable<ProcessedResult>{
             return chipStartTime.compareTo(other.chipStartTime);
         }
         
-//      System.out.println("ProcessedResult.compareTo start" + this.participant.getBib() + " vs " + other.participant.getBib());
+//      LOGGER.info("ProcessedResult.compareTo start" + this.participant.getBib() + " vs " + other.participant.getBib());
 
         // Ok, so they have identical finish, split, start times, tiebreak on 
         // the full name property of the participant. 

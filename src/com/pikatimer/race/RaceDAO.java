@@ -40,6 +40,7 @@ import org.hibernate.Session;
  * @author jcgarner
  */
 public class RaceDAO {
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     private static final ObservableList<Race> raceList =FXCollections.observableArrayList( e -> new Observable[] {e.raceNameProperty()});
     private static final ObservableList<Wave> waveList =FXCollections.observableArrayList(Wave.extractor());
     private static final Map<Integer,Wave> waveMap = new HashMap();
@@ -83,7 +84,7 @@ public class RaceDAO {
         s.save(w);
         s.getTransaction().commit();
         r.addSplit(w);
-        //System.out.println("Adding Split id: " + w.getID() + "to" + w.getRace().getRaceName());
+        //LOGGER.info("Adding Split id: " + w.getID() + "to" + w.getRace().getRaceName());
         updateSplitOrder(r);
         splitMap.put(w.getID(), w);
     }
@@ -93,7 +94,7 @@ public class RaceDAO {
         List<Race> list = new ArrayList<>();
         Session s=HibernateUtil.getSessionFactory().getCurrentSession();
         s.beginTransaction();
-        //System.out.println("RacedAO.refreshRaceList() Starting the query");
+        //LOGGER.info("RacedAO.refreshRaceList() Starting the query");
         
         try {  
             list=s.createQuery("from Race order by ID").list();
@@ -102,11 +103,11 @@ public class RaceDAO {
                 if (ag != null) ag.getCustomIncrementsList();
             });
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            LOGGER.info(e.getMessage());
         } 
         s.getTransaction().commit(); 
         
-        //System.out.println("RaceDAO::refreshRaceList() Returning the list");
+        //LOGGER.info("RaceDAO::refreshRaceList() Returning the list");
         if(!raceList.isEmpty())
             raceList.clear();
         raceList.addAll(list);
@@ -128,7 +129,7 @@ public class RaceDAO {
         s.beginTransaction();
         s.save(w);
         s.getTransaction().commit();
-        //System.out.println("Adding Wave id: " + w.getID() + "to" + w.getRace().getRaceName());
+        //LOGGER.info("Adding Wave id: " + w.getID() + "to" + w.getRace().getRaceName());
         waveList.add(w); 
         waveMap.put(w.getID(), w);
     }
@@ -137,12 +138,12 @@ public class RaceDAO {
         
         w.getRace().removeWave(w); 
         //refreshWaveList();         
-        //System.out.println("removeWaves before: waveList.size()= " + waveList.size());
-        //System.out.println("Wave: " + w.idProperty());
-        waveList.forEach(e -> {System.out.println("Possible: " + e.idProperty() + " " + e.equals(w));});
+        //LOGGER.info("removeWaves before: waveList.size()= " + waveList.size());
+        //LOGGER.info("Wave: " + w.idProperty());
+        waveList.forEach(e -> {LOGGER.info("Possible: " + e.idProperty() + " " + e.equals(w));});
         Boolean res = waveList.remove(w);
         Wave remove = waveMap.remove(w.getID());
-        //System.out.println("removeWaves after: waveList.size()= " + waveList.size() + " result: " + res);
+        //LOGGER.info("removeWaves after: waveList.size()= " + waveList.size() + " result: " + res);
 
         Session s=HibernateUtil.getSessionFactory().getCurrentSession();
         s.beginTransaction();
@@ -160,7 +161,7 @@ public class RaceDAO {
     } 
     
     public Wave getWaveByID(int id) {
-        //System.out.println("getWaveByID: racesLoadedLatch is now " + racesLoadedLatch.getCount());
+        //LOGGER.info("getWaveByID: racesLoadedLatch is now " + racesLoadedLatch.getCount());
         try {
             racesLoadedLatch.await();
         } catch (InterruptedException ex) {
@@ -195,7 +196,7 @@ public class RaceDAO {
     
     public ObservableList<Wave> listWaves() { 
         if(waveList.isEmpty())  refreshWaveList();
-        //System.out.println("ListWaves for " + waveList.size());
+        //LOGGER.info("ListWaves for " + waveList.size());
         //refreshWaveList(); 
         
         return waveList; 
@@ -287,7 +288,7 @@ public class RaceDAO {
         Session s=HibernateUtil.getSessionFactory().getCurrentSession();
         s.beginTransaction(); 
         r.splitsProperty().stream().forEach((item) -> {
-            //System.out.println(self.getRaceName() + " has " + item.getSplitName() + " at " + raceSplits.indexOf(item));
+            //LOGGER.info(self.getRaceName() + " has " + item.getSplitName() + " at " + raceSplits.indexOf(item));
             item.splitPositionProperty().set(r.splitsProperty().indexOf(item)+1);
             s.update(item);
         });

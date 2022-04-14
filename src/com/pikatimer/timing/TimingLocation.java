@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
@@ -63,7 +64,7 @@ import org.hibernate.annotations.GenericGenerator;
 @DynamicUpdate
 @Table(name="timing_location")
 public class TimingLocation {
-    
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
    private final IntegerProperty IDProperty = new SimpleIntegerProperty();
    private final StringProperty locationName;
    private Integer autoAssignRaceID = -1;
@@ -157,29 +158,29 @@ public class TimingLocation {
         return timingInputList;
     }
     public void setInputs(List<TimingLocationInput> inputs) {
-        //System.out.println("TimingLocation.setInputs(list) called for " + locationName + " with " + inputs.size() + " inputs"); 
+        //LOGGER.info("TimingLocation.setInputs(list) called for " + locationName + " with " + inputs.size() + " inputs"); 
         timingInputList = inputs;
         if (inputs != null) {
             timingInputs.setAll(inputs);
             timingInputs.sort((TimingLocationInput u1, TimingLocationInput u2) -> u1.getID().compareTo(u2.getID()));
         }
-        //System.out.println(locationName + " now has " + timingInputs.size() + " inputs");   
+        //LOGGER.info(locationName + " now has " + timingInputs.size() + " inputs");   
     }
     public ObservableList<TimingLocationInput> inputsProperty() {
         return timingInputs; 
     }
     public void addInput(TimingLocationInput t){
-        System.out.println("TimingLocation.addInput called");
+        LOGGER.info("TimingLocation.addInput called");
         timingInputs.add(t); 
         timingInputs.sort((TimingLocationInput u1, TimingLocationInput u2) -> u1.getID().compareTo(u2.getID()));
         timingInputList = new ArrayList(timingInputs); 
-        System.out.println(locationName + " now has " + timingInputs.size() + " inputs");
+        LOGGER.info(locationName + " now has " + timingInputs.size() + " inputs");
         
     }
     public void removeInput(TimingLocationInput t){
         timingInputs.remove(t); 
         timingInputList.remove(t);
-        System.out.println(locationName + " now has " + timingInputList.size() + " inputs");
+        LOGGER.info(locationName + " now has " + timingInputList.size() + " inputs");
 
     }
     
@@ -200,11 +201,11 @@ public class TimingLocation {
         
         // Filter it
         if (!filterStartDuration.isZero() && c.getTimestamp().compareTo(filterStartDuration) < 0) {
-            //System.out.println("Filtering: " + c.getTimestamp() + " is less than " + filterStartDuration);
+            //LOGGER.info("Filtering: " + c.getTimestamp() + " is less than " + filterStartDuration);
             return;
         }
         if (!filterEndDuration.isZero() && c.getTimestamp().compareTo(filterEndDuration) > 0) {
-            //System.out.println("Filtering: " + c.getTimestamp() + " is more than " + filterEndDuration);
+            //LOGGER.info("Filtering: " + c.getTimestamp() + " is more than " + filterEndDuration);
 
             return;
         } 
@@ -213,7 +214,7 @@ public class TimingLocation {
         
         // If this is an auto-assign location, do some auto-assigning
         if (autoWave != null){
-            System.out.println("TimingLocation::cookTime autoWave is not null...");
+            LOGGER.info("TimingLocation::cookTime autoWave is not null...");
             Participant p = ParticipantDAO.getInstance().getParticipantByBib(c.bibProperty().getValueSafe());
             if (p != null) {
                 BooleanProperty inRace = new SimpleBooleanProperty(false);
@@ -221,7 +222,7 @@ public class TimingLocation {
                     if (autoWave.getRace().getID().equals(RaceDAO.getInstance().getWaveByID(w).getRace().getID())) inRace.setValue(Boolean.TRUE);
                 });
                 if (!inRace.get()) {
-                    System.out.println("TimingLocation::cookTime autoWave assigning " + p.getBib() + " to " + autoWave.getWaveName() );
+                    LOGGER.info("TimingLocation::cookTime autoWave assigning " + p.getBib() + " to " + autoWave.getWaveName() );
 
                     p.setWaves(autoWave);
                     ParticipantDAO.getInstance().updateParticipant(p);
@@ -240,7 +241,7 @@ public class TimingLocation {
     public void setFilterStart(Long s) {
         if (s != null) {
             filterStartDuration = Duration.ofNanos(s);     
-            System.out.println("FilterStart is now " + filterStartDuration);
+            LOGGER.info("FilterStart is now " + filterStartDuration);
         } 
     }
     @Transient
@@ -255,7 +256,7 @@ public class TimingLocation {
     public void setFilterEnd(Long s) {
         if (s != null) {
             filterEndDuration = Duration.ofNanos(s);     
-            System.out.println("FilterEnd is now " + filterEndDuration);
+            LOGGER.info("FilterEnd is now " + filterEndDuration);
         } 
     }
     @Transient
@@ -265,7 +266,7 @@ public class TimingLocation {
     
     public void reprocessReads() {
         timingInputs.forEach(t -> {
-            System.out.println("TimingLocation::reprocessReads: " + t.getLocationName());
+            LOGGER.info("TimingLocation::reprocessReads: " + t.getLocationName());
             t.reprocessReads();
         });
     }

@@ -18,6 +18,7 @@ package com.pikatimer.event;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -38,7 +39,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate
 @Table(name="event_options")
 public class EventOptions {
-
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     private Integer eventID;
     private Map<String,String> attributes = new HashMap();
     private Map<String,Integer> intAttributes = new HashMap();
@@ -73,17 +74,17 @@ public class EventOptions {
     @CollectionTable(name="event_options_attributes", joinColumns=@JoinColumn(name="event_id"))
     //@OrderColumn(name = "index_id")
     private Map<String, String> getAttributes() {
-        System.out.println("EventOptions::getAttributes()");
+        LOGGER.info("EventOptions::getAttributes()");
         attributes.keySet().forEach(k -> {
-        System.out.println("  " + k + " -> " + attributes.get(k));
+        LOGGER.info("  " + k + " -> " + attributes.get(k));
         });
         return attributes;
     }
     private void setAttributes(Map<String,String> m) {
         attributes = m;
-        System.out.println("EventOptions::setAttributes(Map)");
+        LOGGER.info("EventOptions::setAttributes(Map)");
         m.keySet().forEach(k -> {
-        System.out.println("  " + k + " -> " + m.get(k));
+        LOGGER.info("  " + k + " -> " + m.get(k));
         });
     } 
     
@@ -93,7 +94,7 @@ public class EventOptions {
             if (attributes.containsKey(key)) {
                 intAttributes.put(key,Integer.parseUnsignedInt(attributes.get(key)));
             } else {
-                System.out.println("EventOptions.getIntegerAtrribute value for " + key + " is NULL!");
+                LOGGER.info("EventOptions.getIntegerAtrribute value for " + key + " is NULL!");
                 return null;
             }
         }
@@ -111,7 +112,7 @@ public class EventOptions {
             if (attributes.containsKey(key)) {
                 boolAttributes.put(key,Boolean.parseBoolean(attributes.get(key)));
             } else {
-                System.out.println("EventOptions.getBooleanAtrribute value for " + key + " is NULL!");
+                LOGGER.info("EventOptions.getBooleanAtrribute value for " + key + " is NULL!");
                 return null;
             }
         }
@@ -124,7 +125,7 @@ public class EventOptions {
     
     public String getStringAttribute(String key) {
         if (!attributes.containsKey(key)) {
-            System.out.println("EventOptions.getStringAttribute value for " + key + " is NULL!");
+            LOGGER.info("EventOptions.getStringAttribute value for " + key + " is NULL!");
 
             return null;
         }

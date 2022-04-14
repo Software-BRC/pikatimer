@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.type.DateType;
@@ -38,7 +39,7 @@ import org.hibernate.type.StringType;
  * object. 
  */
 public class EventDAO {
-    
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     /**
     * SingletonHolder is loaded on the first execution of Singleton.getInstance() 
     * or the first access to SingletonHolder.INSTANCE, not before.
@@ -103,14 +104,14 @@ public class EventDAO {
             
             if (results.isEmpty()) {
                 // nothing in the db, lets create an entry
-                System.out.println("No event in DB, creating one...");
+                LOGGER.info("No event in DB, creating one...");
                 createEvent();
             } else {
                 // woot, we have data. :-) 
                 for(Object[] row : results){
                     event.setEventName(row[1].toString());
                     event.setEventDate(row[2].toString());
-                    System.out.println("Results: " + row[1].toString() + " Date:" + row[2].toString());
+                    LOGGER.info("Results: " + row[1].toString() + " Date:" + row[2].toString());
                 }
             }
             
@@ -122,12 +123,12 @@ public class EventDAO {
             List<EventOptions> list = new ArrayList<>();
             Session s=HibernateUtil.getSessionFactory().getCurrentSession();
             s.beginTransaction();
-            //System.out.println("RacedAO.refreshRaceList() Starting the query");
+            //LOGGER.info("RacedAO.refreshRaceList() Starting the query");
 
             try {  
                 list=s.createQuery("from EventOptions").list();
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                LOGGER.info(e.getMessage());
             } 
             s.getTransaction().commit(); 
                     

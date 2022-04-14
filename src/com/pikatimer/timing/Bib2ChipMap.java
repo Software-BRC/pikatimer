@@ -82,7 +82,7 @@ public class Bib2ChipMap {
     @Column(name="bib")
     @CollectionTable(name="bib2chipmap", joinColumns=@JoinColumn(name="bib2chip_id"))
     public Map<String, String> getChip2BibMap() {
-        //System.out.println("TLI.getAttributes called, returning " + attributes.size() + " attributes");
+        //LOGGER.info("TLI.getAttributes called, returning " + attributes.size() + " attributes");
         return chip2bibMap;
     }
     public void setChip2BibMap(Map<String,String> chip2bib) {
@@ -93,20 +93,20 @@ public class Bib2ChipMap {
         } else {
             chip2bibMap = new HashMap();
         }
-        //System.out.println("setChip2bibMap called with " + chip2bibMap.size() + " mappings");
+        //LOGGER.info("setChip2bibMap called with " + chip2bibMap.size() + " mappings");
     } 
     
     public String getBibFromChip(String Chip) {
-        //System.out.println("getBibFromChip called for \"" + Chip +"\"");
+        //LOGGER.info("getBibFromChip called for \"" + Chip +"\"");
 
         if(customMapProperty.getValue() && chip2bibMap.size() > 0 ) {
-            //System.out.println("Using a mapping");
+            //LOGGER.info("Using a mapping");
 
             if (chip2bibMap.containsKey(Chip)) return chip2bibMap.get(Chip);
             else if ("0".equals(Chip)) return Chip; // special chip of "0" 
             return "Unmapped " + Chip;
         } else {
-            //System.out.println("Not using a mapping" + customMapProperty.getValue().toString());
+            //LOGGER.info("Not using a mapping" + customMapProperty.getValue().toString());
 
             return Chip;
         }

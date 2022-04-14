@@ -34,7 +34,6 @@ import java.io.IOException;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.lang.Double.MAX_VALUE;
-import java.nio.file.Files;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +60,6 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
@@ -115,7 +113,7 @@ import org.controlsfx.control.ToggleSwitch;
  * @author jcgarner
  */
 public class FXMLResultsController  {
-    
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     //@FXML ChoiceBox<Race> raceChoiceBox;
     @FXML ComboBox<Race> raceComboBox; 
     @FXML Label selectedRaceLabel;
@@ -195,7 +193,7 @@ public class FXMLResultsController  {
         
         raceComboBox.getSelectionModel().selectedIndexProperty().addListener((ObservableValue<? extends Number> observableValue, Number number, Number number2) -> {
             // flip the table
-            //System.out.println("raceChoiceBox listener fired: now with number2 set to " + number2.intValue());
+            //LOGGER.info("raceChoiceBox listener fired: now with number2 set to " + number2.intValue());
             
             if (number2.intValue() == -1 )  {
                 Platform.runLater(() -> {raceComboBox.getSelectionModel().clearAndSelect(0);});
@@ -224,7 +222,7 @@ public class FXMLResultsController  {
 
                     @Override
                     public void onChanged(ListChangeListener.Change change) {
-                        System.out.println("The list of splits has changed...");
+                        LOGGER.info("The list of splits has changed...");
                         TableView oldTableView = raceTableViewMap.get(activeRace);
                         rebuildResultsTableView(activeRace);
                         if (raceComboBox.getSelectionModel().getSelectedItem().equals(activeRace)) {
@@ -246,7 +244,7 @@ public class FXMLResultsController  {
             
             
             String rm = activeRace.getStringAttribute("TimeRoundingMode");
-            System.out.println("TimeRoundingMode: " + rm);
+            LOGGER.info("TimeRoundingMode: " + rm);
             if (rm == null) {
                 rm = "Down";
                 activeRace.setStringAttribute("TimeRoundingMode", rm);
@@ -272,7 +270,7 @@ public class FXMLResultsController  {
             paceFormatChoiceBox.getSelectionModel().select(pace);
             
             String dispFormat = activeRace.getStringAttribute("TimeDisplayFormat");
-            System.out.println("TimeDisplayFormat: " + dispFormat);
+            LOGGER.info("TimeDisplayFormat: " + dispFormat);
             if (dispFormat == null) {
                 dispFormat =  timeFormatChoiceBox.getItems().get(0);
                 activeRace.setStringAttribute("TimeDisplayFormat", dispFormat);
@@ -295,7 +293,7 @@ public class FXMLResultsController  {
             });
             // Setup the started/finished/pending counters
 //            resultsDAO.getResults(activeRace.getID()).addListener((ListChangeListener.Change<? extends Result> c) -> {
-//                System.out.println("Race Result List Changed...");
+//                LOGGER.info("Race Result List Changed...");
 //            
 //            });
             
@@ -305,7 +303,7 @@ public class FXMLResultsController  {
                 return false;
             });
             FilteredList<Result> dnfFilteredParticipantsList = new FilteredList<>(resultsDAO.getResults(activeRace.getID()), res -> {
-                //System.out.println("DQ/DNF Check: " + res.getBib() + " " + participantDAO.getParticipantByBib(res.getBib()).dnfProperty().get());
+                //LOGGER.info("DQ/DNF Check: " + res.getBib() + " " + participantDAO.getParticipantByBib(res.getBib()).dnfProperty().get());
                 if (Status.GOOD.equals(participantDAO.getParticipantByBib(res.getBib()).getStatus())) return false;
                 return true;
             });
@@ -322,7 +320,7 @@ public class FXMLResultsController  {
         timeRoundingChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue,  newValue) -> {
             Race r = raceComboBox.getValue();
             if (newValue != null && !newValue.equals(r.getStringAttribute("TimeRoundingMode"))) {
-                System.out.println("EventOptions: TimeRoundingMode changed from " + oldValue + " to " + newValue);
+                LOGGER.info("EventOptions: TimeRoundingMode changed from " + oldValue + " to " + newValue);
                 r.setStringAttribute("TimeRoundingMode", newValue);
                 raceDAO.updateRace(r);
             }
@@ -330,7 +328,7 @@ public class FXMLResultsController  {
         timeFormatChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue,  newValue) -> {
             Race r = raceComboBox.getValue();
             if (newValue != null && !newValue.equals(r.getStringAttribute("TimeDisplayFormat"))) {
-                System.out.println("Race: TimeDisplayFormat changed from " + oldValue + " to " + newValue);
+                LOGGER.info("Race: TimeDisplayFormat changed from " + oldValue + " to " + newValue);
                 r.setStringAttribute("TimeDisplayFormat", newValue);
                 raceDAO.updateRace(r);
             }
@@ -338,7 +336,7 @@ public class FXMLResultsController  {
         paceFormatChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue,  newValue) -> {
             Race r = raceComboBox.getValue();
             if (newValue != null && !newValue.name().equals(r.getStringAttribute("PaceDisplayFormat"))) {
-                System.out.println("Race: PaceDisplayFormat changed from " + oldValue + " to " + newValue);
+                LOGGER.info("Race: PaceDisplayFormat changed from " + oldValue + " to " + newValue);
                 r.setStringAttribute("PaceDisplayFormat", newValue.name());
                 raceDAO.updateRace(r);
             }
@@ -537,7 +535,7 @@ public class FXMLResultsController  {
 
                 // 2. Set the filter Predicate whenever the filter changes.
                 resultsSearchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-                    //System.out.println("resultsSearchTextField change: " + newValue);
+                    //LOGGER.info("resultsSearchTextField change: " + newValue);
                     filteredParticipantsList.setPredicate(result -> {
                         // If filter text is empty, display all persons.
                         if (newValue == null || newValue.isEmpty()) {
@@ -546,7 +544,7 @@ public class FXMLResultsController  {
                         
                         Participant participant = participantDAO.getParticipantByBib(result.getBib());
                         if (participant == null) { 
-                            System.out.println(" Null participant, bailing...");
+                            LOGGER.info(" Null participant, bailing...");
                             return false;
                         }
                         String searchString = resultsSearchTextField.textProperty().getValueSafe().toLowerCase().replaceAll("\\s","");
@@ -804,7 +802,7 @@ public class FXMLResultsController  {
             if (r.raceReportsProperty().isEmpty()) {
                 // create the default overall and award reports
                 
-                System.out.println("Adding default Ooverall and Award race reports");
+                LOGGER.info("Adding default Ooverall and Award race reports");
                 RaceReport overall = new RaceReport();
                 overall.setReportType(ReportTypes.OVERALL);
                 r.addRaceReport(overall);
@@ -824,9 +822,9 @@ public class FXMLResultsController  {
                 FXMLLoader tlLoader = new FXMLLoader(getClass().getResource("/com/pikatimer/results/FXMLResultOutput.fxml"));
                 try {
                     reportDetails.getChildren().add(tlLoader.load());
-                    System.out.println("Showing RaceReport of type " + rr.getReportType().toString());
+                    LOGGER.info("Showing RaceReport of type " + rr.getReportType().toString());
                 } catch (IOException ex) {
-                    System.out.println("Loader Exception for race reports!");
+                    LOGGER.info("Loader Exception for race reports!");
                     ex.printStackTrace();
                     Logger.getLogger(FXMLResultOutputController.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -864,7 +862,7 @@ public class FXMLResultsController  {
                         delayString=updateTimeDelayChoiceBox.getSelectionModel().getSelectedItem();
                         delay = Integer.parseUnsignedInt(delayString.replaceAll("\\D+", ""));
                         if (delayString.contains("m")) delay = delay * 60;
-                        //System.out.println("Auto-Update timer " + (delay-counter) + "s (" + counter + "/" + delay + ")");
+                        //LOGGER.info("Auto-Update timer " + (delay-counter) + "s (" + counter + "/" + delay + ")");
                         
                         if (counter >= delay) {
                             counter = 0;
@@ -876,7 +874,7 @@ public class FXMLResultsController  {
                         Thread.sleep(1000);
                         updateMessage((delay-counter) + "s");
                     } catch (Exception ex) {
-                        System.out.println("AutoUpdateReportsThread Exception: " + ex.getMessage());
+                        LOGGER.info("AutoUpdateReportsThread Exception: " + ex.getMessage());
                     }
 
                 }
@@ -991,7 +989,7 @@ public class FXMLResultsController  {
         localGrid.add(statusLabel, 1, 1, 2, 1);
         
         filePath.textProperty().addListener((observable, oldValue, newValue) -> {
-            //System.out.println("TextField Text Changed (newValue: " + newValue + ")");
+            //LOGGER.info("TextField Text Changed (newValue: " + newValue + ")");
             if (newValue == null || newValue.isEmpty()){
                 statusLabel.setText("Please enter a target directory.");
             }
@@ -1148,11 +1146,11 @@ public class FXMLResultsController  {
         if (rd == null) return;
         // Make sure it is  not in use anywhere, then remove it.
         raceDAO.listRaces().forEach(r -> {
-            System.out.println("  Race: " + r.getRaceName());
+            LOGGER.info("  Race: " + r.getRaceName());
             r.getRaceReports().forEach(rr -> {
-                System.out.println("  Report: " + rr.getReportType().toString());
+                LOGGER.info("  Report: " + rr.getReportType().toString());
                 rr.getRaceOutputTargets().forEach(rot -> {
-                    System.out.println("  Target: " + rot.getUUID() );
+                    LOGGER.info("  Target: " + rot.getUUID() );
                     if (rd.getID().equals(rot.getOutputDestination()) ) {
                         // the ReportDestination is in use
                         inUse.set(true);
@@ -1174,13 +1172,13 @@ public class FXMLResultsController  {
     }
     
     public void addNewReport(ActionEvent fxevent){
-        System.out.println("addNewReport called");
+        LOGGER.info("addNewReport called");
         
         Race r = activeRace; 
         
         if (! raceReportsUIMap.containsKey(r)) {
         } else {
-            System.out.println("Adding a new report for " + r.getRaceName());
+            LOGGER.info("Adding a new report for " + r.getRaceName());
             RaceReport newRR = new RaceReport();
             newRR.setReportType(ReportTypes.OVERALL);
             r.addRaceReport(newRR);
@@ -1190,11 +1188,11 @@ public class FXMLResultsController  {
             FXMLLoader tlLoader = new FXMLLoader(getClass().getResource("/com/pikatimer/results/FXMLResultOutput.fxml"));
             try {
                 raceReportsUIMap.get(r).getChildren().add(tlLoader.load());
-                System.out.println("Added new RaceReport of type " + newRR.getReportType().toString());
+                LOGGER.info("Added new RaceReport of type " + newRR.getReportType().toString());
 
 
             } catch (IOException ex) {
-                System.out.println("Loader Exception for race reports!");
+                LOGGER.info("Loader Exception for race reports!");
                 ex.printStackTrace();
 
                 Logger.getLogger(FXMLResultOutputController.class.getName()).log(Level.SEVERE, null, ex);
@@ -1218,7 +1216,7 @@ public class FXMLResultsController  {
             stage.setScene(new Scene(setupHeadersRoot));  
             stage.showAndWait();
         } catch (IOException ex) {
-            System.out.println("Loader Error in FXMLSetupHeaders.fxml");
+            LOGGER.info("Loader Error in FXMLSetupHeaders.fxml");
         }
     }
     private class DurationTableCell extends TableCell<Result, Duration> {
@@ -1341,7 +1339,7 @@ public class FXMLResultsController  {
                 boundRD = op;
                 transferStatusLabel.setText("Status: " + op.transferStatusProperty().getValueSafe());
                 setGraphic(container);
-                System.out.println("updateItem called: " + op.transferStatusProperty().getValueSafe());
+                LOGGER.info("updateItem called: " + op.transferStatusProperty().getValueSafe());
             }
         }
     }

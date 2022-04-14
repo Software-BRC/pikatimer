@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -46,6 +47,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author jcgarner
  */
 public class Overall implements RaceReportType{
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     Race race;
     
         // Defaults
@@ -92,14 +94,14 @@ public class Overall implements RaceReportType{
     
     @Override
     public String process(List<ProcessedResult> prList, RaceReport rr) {
-        System.out.println("Overall.process() Called... ");
+        LOGGER.info("Overall.process() Called... ");
         String report = new String();
         
         race = rr.getRace();
         
         Event event = Event.getInstance();  // fun with singletons... 
         
-        //rr.getKnownAttributeNames().forEach(s -> {System.out.println("Known Attribute: " + s);});
+        //rr.getKnownAttributeNames().forEach(s -> {LOGGER.info("Known Attribute: " + s);});
         supportedOptions.keySet().forEach(k -> supportedOptions.put(k, rr.getBooleanAttribute(k)));
 
 

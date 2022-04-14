@@ -16,6 +16,7 @@
  */
 package com.pikatimer.race;
 
+import java.util.logging.Logger;
 import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -31,7 +32,7 @@ import javax.persistence.Embeddable;
  */
 @Embeddable
 public class AwardDepth {
-
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     private final IntegerProperty startCountProperty = new SimpleIntegerProperty();
     private final StringProperty endCountProperty = new SimpleStringProperty(); 
     private final IntegerProperty depthProperty = new SimpleIntegerProperty();
@@ -42,7 +43,7 @@ public class AwardDepth {
     
     @Column(name="start")
     public Integer getStartCount() {
-        //System.out.println("AgeGroups.getAGIncrement() returning " + agIncrement);
+        //LOGGER.info("AgeGroups.getAGIncrement() returning " + agIncrement);
         return startCountProperty.getValue(); 
     }
     public void setStartCount(Integer i) {
@@ -58,11 +59,11 @@ public class AwardDepth {
     
     @Column(name="depth")
     public Integer getDepth() {
-        //System.out.println("AgeGroups.getAGIncrement() returning " + agIncrement);
+        //LOGGER.info("AgeGroups.getAGIncrement() returning " + agIncrement);
         return depthProperty.getValue();
     }
     public void setDepth(Integer i) {
-        System.out.println("AwardDepth.setAGIncrement() with " + i);
+        LOGGER.info("AwardDepth.setAGIncrement() with " + i);
         depthProperty.setValue(i);
     }
     public IntegerProperty depthProperty() {

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -57,6 +58,7 @@ import org.hibernate.annotations.Parameter;
 @DynamicUpdate
 @Table(name="race_awards")
 public class RaceAwards {
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     private Integer raceID;
     private Map<String,String> attributes = new HashMap();
     private final Map<String,Integer> intAttributes = new HashMap();
@@ -104,7 +106,7 @@ public class RaceAwards {
         return awardCategories;
     }
     public void setAwardCategories(List<AwardCategory> a){
-        System.out.println("RaceAwards::setAwardCategories called ");
+        LOGGER.info("RaceAwards::setAwardCategories called ");
         awardCategories = a;
         if (awardCategoriesList.isEmpty() && a != null) {
             awardCategoriesList.addAll(a);
@@ -162,7 +164,7 @@ public class RaceAwards {
     }
      
     public void createDefaultCategories(){
-        System.out.println("RaceAwards:createDefaultCategories() Called...");
+        LOGGER.info("RaceAwards:createDefaultCategories() Called...");
 
         // Overall
         AwardCategory o = new AwardCategory();
@@ -238,7 +240,7 @@ public class RaceAwards {
             if (attributes.containsKey(key)) {
                 intAttributes.put(key,Integer.parseUnsignedInt(attributes.get(key)));
             } else {
-                System.out.println("RaceAwards.getIntegerAtrribute key of " + key + " is NULL!");
+                LOGGER.info("RaceAwards.getIntegerAtrribute key of " + key + " is NULL!");
                 return null;
             }
         }
@@ -256,7 +258,7 @@ public class RaceAwards {
             if (attributes.containsKey(key)) {
                 boolAttributes.put(key,Boolean.parseBoolean(attributes.get(key)));
             } else {
-                System.out.println("RaceAwards.getBooleanAtrribute key of " + key + " is NULL!");
+                LOGGER.info("RaceAwards.getBooleanAtrribute key of " + key + " is NULL!");
                 return null;
             }
         }

@@ -24,6 +24,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 
 /**
@@ -31,7 +32,7 @@ import javafx.application.Platform;
  * @author jcgarner
  */
 public class PikaRFIDFileReader extends TailingReader {
-    
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     
     
     
@@ -58,10 +59,10 @@ public class PikaRFIDFileReader extends TailingReader {
             dateAndTime = tokens[3].replaceAll("\"", "");
             
             if (port.equals("0") && ! chip.equals("0")) { // invalid combo
-                System.out.println("Non Start time: " + s);
+                LOGGER.info("Non Start time: " + s);
                 return;
             } else if (!port.matches("[1234]") && !chip.equals("0")){
-                System.out.println("Invalid Port: " + s);
+                LOGGER.info("Invalid Port: " + s);
                 return;
             }
             
@@ -91,8 +92,8 @@ public class PikaRFIDFileReader extends TailingReader {
             time = dateTime[1];
         } else time = dateTime[0];
 
-        //System.out.println("Chip: " + chip);
-        //System.out.println("dateTime: " + dateTime);
+        //LOGGER.info("Chip: " + chip);
+        //LOGGER.info("dateTime: " + dateTime);
         
 
         
@@ -109,7 +110,7 @@ public class PikaRFIDFileReader extends TailingReader {
                 // if it is before the event date, just return
                 if (timestamp.isNegative()) {
                     String status = "Date of " + date + " is in the past, ignoring";
-                    System.out.println(status);
+                    LOGGER.info(status);
                     Platform.runLater(() -> {
                         statusLabel.textProperty().setValue(status);
                     });
@@ -117,7 +118,7 @@ public class PikaRFIDFileReader extends TailingReader {
                 } 
             } catch (Exception e) {
                 String status = "Unable to parse the date in \"" + date +"\" : " + e.getMessage();
-                System.out.println(status);
+                LOGGER.info(status);
                 Platform.runLater(() -> {
                     statusLabel.textProperty().setValue(status);
                 });
@@ -144,14 +145,14 @@ public class PikaRFIDFileReader extends TailingReader {
                 timingListener.processRead(rawTime); // process it
             } else {
                 String status = "Unable to parse the time in " + time;
-                System.out.println(status);
+                LOGGER.info(status);
                 Platform.runLater(() -> {
                     statusLabel.textProperty().setValue(status);
                 });
             }
         } else {
             String status="Unable to parse the time: " + s;
-            System.out.println(status);
+            LOGGER.info(status);
             Platform.runLater(() -> {
                 statusLabel.textProperty().setValue(status);
             });

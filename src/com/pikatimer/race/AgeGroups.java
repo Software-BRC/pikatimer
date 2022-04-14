@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -51,6 +52,7 @@ import org.hibernate.annotations.Parameter;
 @DynamicUpdate
 @Table(name="race_age_groups")
 public class AgeGroups {
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     private Integer raceID;
 
     private final IntegerProperty agStartProperty = new SimpleIntegerProperty(9);
@@ -102,11 +104,11 @@ public class AgeGroups {
     
     @Column(name="ag_increment")
     public Integer getAGIncrement() {
-        //System.out.println("AgeGroups.getAGIncrement() returning " + agIncrement);
+        //LOGGER.info("AgeGroups.getAGIncrement() returning " + agIncrement);
         return agIncrementProperty.getValue(); 
     }
     public void setAGIncrement(Integer i) {
-        System.out.println("AgeGroups.setAGIncrement() with " + i);
+        LOGGER.info("AgeGroups.setAGIncrement() with " + i);
         agIncrementProperty.setValue(i);
     }
     public IntegerProperty agIncrementProperty() {
@@ -118,7 +120,7 @@ public class AgeGroups {
         return mastersProperty.getValue(); 
     }
     public void setMasters(Integer i) {
-        //System.out.println("AgeGroups.setMasters() with " + i);
+        //LOGGER.info("AgeGroups.setMasters() with " + i);
         mastersProperty.setValue(i);
     }
     public IntegerProperty mastersProperty() {
@@ -130,7 +132,7 @@ public class AgeGroups {
         return agStartProperty.getValue(); 
     }
     public void setAGStart(Integer i) {
-        //System.out.println("AgeGroups.setAGStart() with " + i);
+        //LOGGER.info("AgeGroups.setAGStart() with " + i);
         agStartProperty.setValue(i);
     }
     public IntegerProperty agStartProperty() {
@@ -142,7 +144,7 @@ public class AgeGroups {
         return customIncrementsProperty.getValue(); 
     }
     public void setUseCustomIncrements(Boolean i) {
-        //System.out.println("AgeGroups.setAGStart() with " + i);
+        //LOGGER.info("AgeGroups.setAGStart() with " + i);
         customIncrementsProperty.setValue(i);
     }
     public BooleanProperty useCustomIncrementsProperty() {
@@ -154,7 +156,7 @@ public class AgeGroups {
         return customNamesProperty.getValue(); 
     }
     public void setUseCustomNames(Boolean i) {
-        //System.out.println("AgeGroups.setAGStart() with " + i);
+        //LOGGER.info("AgeGroups.setAGStart() with " + i);
         customNamesProperty.setValue(i);
         
     }
@@ -183,7 +185,7 @@ public class AgeGroups {
     }
     
     public void addCustomIncrement(AgeGroupIncrement i){
-        System.out.println("addCustomIncrement called");
+        LOGGER.info("addCustomIncrement called");
         customIncrementObservableList.add(i);
         customIncrementList = customIncrementObservableList;
     }
@@ -265,7 +267,7 @@ public class AgeGroups {
         // Step 3: Figure out what the AG category is
         
         if (customIncrementsProperty.get()) {
-            //System.out.println("AgeGroups::ageToAGString:  CustomIncrements in use");
+            //LOGGER.info("AgeGroups::ageToAGString:  CustomIncrements in use");
             if (customIncrementObservableList.isEmpty()) {
                 agShortNameMap.put(ageToAG(i),"0+");
             } else {
@@ -273,14 +275,14 @@ public class AgeGroups {
                 Integer x = customIncrementObservableList.get(0).getStartAge() -1;
                 String end = x.toString();
                 agShortNameMap.put(start,start.toString()+"-" + end); // tmp value
-                //System.out.println("AgeGroups::ageToAGString:  tmp set to " + agShortNameMap.get(start));
+                //LOGGER.info("AgeGroups::ageToAGString:  tmp set to " + agShortNameMap.get(start));
 
                 for (AgeGroupIncrement ag: customIncrementObservableList ){
                     if (Objects.equals(ag.getStartAge(), start)) {
                         end = ag.endAgeProperty().getValue();
                         if (!"+".equals(end)) end = "-"+end;
                         agShortNameMap.put(start,start.toString()+end);
-                        //System.out.println("AgeGroups::ageToAGString:  finally set to " + agShortNameMap.get(start));
+                        //LOGGER.info("AgeGroups::ageToAGString:  finally set to " + agShortNameMap.get(start));
 
                     }
                 }
@@ -294,7 +296,7 @@ public class AgeGroups {
             }
         }
         
-        //System.out.println("AgeGroups::ageToAGString " + i + " -> " + agShortNameMap.get(ageToAG(i)));
+        //LOGGER.info("AgeGroups::ageToAGString " + i + " -> " + agShortNameMap.get(ageToAG(i)));
         return agShortNameMap.get(ageToAG(i));
     }
     
@@ -324,13 +326,13 @@ public class AgeGroups {
             else if (i <= agStartProperty.get()) agMap.put(i,1);
             else agMap.put(i,((i/agIncrementProperty.get())*agIncrementProperty.get()));
         }
-        //System.out.println("AgeGroups::ageToAG " + i + " -> " + agMap.get(i));
+        //LOGGER.info("AgeGroups::ageToAG " + i + " -> " + agMap.get(i));
         return agMap.get(i);
         
     }
 
     private void invalidateMaps() {
-        //System.out.println("AgeGroups.invalidateMaps() Called");
+        //LOGGER.info("AgeGroups.invalidateMaps() Called");
 
         agNameMap = new ConcurrentHashMap();
         agMap = new ConcurrentHashMap();

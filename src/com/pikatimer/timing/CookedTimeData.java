@@ -123,11 +123,11 @@ public class CookedTimeData {
     
     @Column(name="timing_loc_id") 
     public Integer getTimingLocationId() {
-        //System.out.println("RawTimeData: Returning timingLocationInputId of " + timingLocationInputId);
+        //LOGGER.info("RawTimeData: Returning timingLocationInputId of " + timingLocationInputId);
         return timingLocationId;
     }
     public void setTimingLocationId(Integer i) {
-        //System.out.println("RawTimeData: Setting timingLocationInputId to " + i);
+        //LOGGER.info("RawTimeData: Setting timingLocationInputId to " + i);
         this.timingLocationId = i;
     }
 //    public StringProperty timingLocationNameProperty() {
@@ -136,21 +136,21 @@ public class CookedTimeData {
     
     @Column(name="timing_loc_input_id") 
     public Integer getTimingLocationInputId() {
-        //System.out.println("RawTimeData: Returning timingLocationInputId of " + timingLocationInputId);
+        //LOGGER.info("RawTimeData: Returning timingLocationInputId of " + timingLocationInputId);
         return timingLocationInputId;
     }
     public void setTimingLocationInputId(Integer i) {
-        //System.out.println("RawTimeData: Setting timingLocationInputId to " + i);
+        //LOGGER.info("RawTimeData: Setting timingLocationInputId to " + i);
         this.timingLocationInputId = i;
     }
     
     @Column(name="ignore_time") 
     public Boolean getIgnoreTime() {
-        //System.out.println("RawTimeData: Returning timingLocationInputId of " + timingLocationInputId);
+        //LOGGER.info("RawTimeData: Returning timingLocationInputId of " + timingLocationInputId);
         return ignoreTimeBoolean.getValue();
     }
     public void setIgnoreTime(Boolean i) {
-        //System.out.println("RawTimeData: Setting timingLocationInputId to " + i);
+        //LOGGER.info("RawTimeData: Setting timingLocationInputId to " + i);
         this.ignoreTimeBoolean.setValue(i);
     }
     public BooleanProperty ignoreTimeProperty() {
@@ -159,11 +159,11 @@ public class CookedTimeData {
     
     @Column(name="backup_time") 
     public Boolean getBackupTime() {
-        //System.out.println("RawTimeData: Returning timingLocationInputId of " + timingLocationInputId);
+        //LOGGER.info("RawTimeData: Returning timingLocationInputId of " + timingLocationInputId);
         return backupTimeBoolean.getValue();
     }
     public void setBackupTime(Boolean i) {
-        //System.out.println("RawTimeData: Setting timingLocationInputId to " + i);
+        //LOGGER.info("RawTimeData: Setting timingLocationInputId to " + i);
         this.backupTimeBoolean.setValue(i);
     }
     public BooleanProperty backupTimeProperty() {

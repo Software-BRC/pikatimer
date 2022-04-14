@@ -18,7 +18,7 @@ package com.pikatimer.util;
 
 import com.pikatimer.util.fileTransports.FTPSTransport;
 import com.pikatimer.util.fileTransports.LocalTransport;
-import com.pikatimer.util.fileTransports.SFTPTransport;
+//import com.pikatimer.util.fileTransports.SFTPTransport;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,8 +55,8 @@ public enum FileTransferTypes {
         switch(this){
             case LOCAL:
                 return new LocalTransport();
-            case SFTP:
-                return new SFTPTransport();
+            /*case SFTP:
+                return new SFTPTransport();*/
             case FTPS:
                 return new FTPSTransport();
         }

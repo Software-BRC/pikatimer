@@ -52,7 +52,7 @@ import org.controlsfx.control.ToggleSwitch;
  * @author John Garner <segfaultcoredump@gmail.com>
  */
 public abstract class TailingReader implements TimingReader{
-        
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     protected TimingListener timingListener;
     protected File sourceFile; 
     protected final StringProperty fileName; 
@@ -116,7 +116,7 @@ public abstract class TailingReader implements TimingReader{
 
     @Override
     public void startReading() {
-        System.out.println("TailingReader:StartReading() called");
+        LOGGER.info("TailingReader:StartReading() called");
         if (tailingThread != null && tailingThread.isAlive()) return;
         if (readingThread != null && readingThread.isAlive()) return;
         Task readingTask = new Task<Void>() {
@@ -127,7 +127,7 @@ public abstract class TailingReader implements TimingReader{
                         
                         while (readingStatus.getValue() && (sourceFile == null || !sourceFile.exists() || !sourceFile.canRead() || !sourceFile.isFile())){
                             Thread.sleep(1000);
-                            System.out.println("Waiting for " + sourceFile.getPath());
+                            LOGGER.info("Waiting for " + sourceFile.getPath());
                             Platform.runLater(() ->{
                                 statusLabel.setText("Waiting for " + sourceFile.getPath());
                             });
@@ -199,7 +199,7 @@ public abstract class TailingReader implements TimingReader{
                     } else readOnce();
                         
                 } else {
-                    System.out.println("No change in file name");
+                    LOGGER.info("No change in file name");
                 }
             });
             
@@ -221,10 +221,10 @@ public abstract class TailingReader implements TimingReader{
             watchProgressIndicator.setMaxHeight(30.0);
             autoImportToggleSwitch.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
                 if(newValue) {
-                    System.out.println("TailingReader: autoImportToggleSwitch event: calling startReading()");
+                    LOGGER.info("TailingReader: autoImportToggleSwitch event: calling startReading()");
                     startReading();
                 } else {
-                    System.out.println("TailingReader: autoImportToggleSwitch event: calling stopReading()");
+                    LOGGER.info("TailingReader: autoImportToggleSwitch event: calling stopReading()");
                     stopReading();
                 }
             });
@@ -254,7 +254,7 @@ public abstract class TailingReader implements TimingReader{
     private class MyHandler extends TailerListenerAdapter {
         @Override
         public void handle(String line) {
-            System.out.println("handle: " + line);
+            LOGGER.info("handle: " + line);
             process(line);
         }
     }
@@ -265,14 +265,14 @@ public abstract class TailingReader implements TimingReader{
     @Override
     public void readOnce() {
         // get the event date, just in case we need it
-        System.out.println("TailingReader.readOnce called.");
+        LOGGER.info("TailingReader.readOnce called.");
         stopReading();
         
         if (sourceFile == null || !sourceFile.exists() || !sourceFile.canRead() || !sourceFile.isFile()) {
             statusLabel.setText("Unable to open file: " + fileName.getValueSafe());
             return;
         }
-        System.out.println("  Current file is: \"" + sourceFile.getAbsolutePath() + "\"");
+        LOGGER.info("  Current file is: \"" + sourceFile.getAbsolutePath() + "\"");
         // Run this in a tailingThread....
         Task task;
         task = new Task<Void>() {
@@ -281,7 +281,7 @@ public abstract class TailingReader implements TimingReader{
                     reading.acquire();
                     try (Stream<String> s = Files.lines(sourceFile.toPath())) {
                         s.map(line -> line.trim()).filter(line -> !line.isEmpty()).forEach(line -> {
-                            //System.out.println("readOnce read " + s);
+                            //LOGGER.info("readOnce read " + s);
                             process(line);
                         });
                         s.close();
@@ -309,12 +309,12 @@ public abstract class TailingReader implements TimingReader{
         // get any existing attributes
         String filename = timingListener.getAttribute("TailingReader:filename");
         if (filename != null) {
-            System.out.println("TailingReader: Found existing file setting: " + filename);
+            LOGGER.info("TailingReader: Found existing file setting: " + filename);
             sourceFile = new File(filename).getAbsoluteFile();
             fileName.setValue(filename);
             
         } else {
-            System.out.println("TailingReader: Did not find existing file setting." );
+            LOGGER.info("TailingReader: Did not find existing file setting." );
         }
         
         

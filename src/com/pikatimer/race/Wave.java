@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.logging.Logger;
 import javafx.beans.Observable;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.IntegerProperty;
@@ -52,7 +53,7 @@ import org.hibernate.annotations.GenericGenerator;
 @DynamicUpdate
 @Table(name="race_waves")
 public class Wave {
-    
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     //private final Wave self; 
     private final IntegerProperty IDProperty;
     private Race race; 
@@ -245,10 +246,10 @@ public class Wave {
     
     public StringProperty waveDisplayNameProperty(){
         // setup the bindings for the waveDisplayName
-        System.out.println("Wave:waveDisplayNameProperty() called");
+        LOGGER.info("Wave:waveDisplayNameProperty() called");
 
         if (waveDNBinding==null && race != null && RaceDAO.getInstance().listRaces().size() > 0) {
-            System.out.println("Null WaveDNBinding");
+            LOGGER.info("Null WaveDNBinding");
 
 
             StringBinding waveDNBinding = new StringBinding() {
@@ -258,16 +259,16 @@ public class Wave {
 
                     @Override
                     protected String computeValue(){
-                        System.out.println("WaveDNBinding.computeValue() called");
+                        LOGGER.info("WaveDNBinding.computeValue() called");
 
                         if (race.wavesProperty().size() == 1 ) {
-                            System.out.println("WaveDNBinding.computeValue() returning " + race.getRaceName());
+                            LOGGER.info("WaveDNBinding.computeValue() returning " + race.getRaceName());
                             return race.getRaceName();
                         } else if (RaceDAO.getInstance().listRaces().size() == 1 ) {
-                            System.out.println("WaveDNBinding.computeValue() returning " + waveName.getValueSafe());
+                            LOGGER.info("WaveDNBinding.computeValue() returning " + waveName.getValueSafe());
                             return waveName.getValueSafe();
                         } else {
-                            System.out.println("WaveDNBinding.computeValue() returning " + race.getRaceName() + " " + waveName.getValueSafe());
+                            LOGGER.info("WaveDNBinding.computeValue() returning " + race.getRaceName() + " " + waveName.getValueSafe());
                             return race.getRaceName() + " " + waveName.getValueSafe();
                         } 
                     }
@@ -283,10 +284,10 @@ public class Wave {
     @Override
     public String toString(){
         if(race.wavesProperty().size()> 1) {
-            //System.out.println("Wave.toString() called: " + race.getRaceName() + " " + waveName.getValueSafe());
+            //LOGGER.info("Wave.toString() called: " + race.getRaceName() + " " + waveName.getValueSafe());
             return race.getRaceName() + " " + waveName.getValueSafe(); 
         } else {
-            //System.out.println("Wave.toString() called: " + race.getRaceName() );
+            //LOGGER.info("Wave.toString() called: " + race.getRaceName() );
             return race.getRaceName();
         }
     }
@@ -305,7 +306,7 @@ public class Wave {
 
     @Override
     public boolean equals(Object obj) {
-        //System.out.println("Wave.equals called for " + this.IDProperty.toString());
+        //LOGGER.info("Wave.equals called for " + this.IDProperty.toString());
         if (obj == null) {
             return false;
         }
@@ -313,28 +314,28 @@ public class Wave {
             return false;
         }
         final Wave other = (Wave) obj;
-        //System.out.println("Wave.equals comparing to " + other.IDProperty.toString());
+        //LOGGER.info("Wave.equals comparing to " + other.IDProperty.toString());
         if (!Objects.equals(this.race, other.race)) {
-        //System.out.println("Wave.equals false: race");
+        //LOGGER.info("Wave.equals false: race");
         return false;
         }
         if (!Objects.equals(this.waveName.getValue(), other.waveName.getValue())) {
-            //System.out.println("Wave.equals false: waveName: " + this.waveName + " vs " + other.waveName);
+            //LOGGER.info("Wave.equals false: waveName: " + this.waveName + " vs " + other.waveName);
             return false;
         }
         if (!Objects.equals(this.waveStart, other.waveStart)) {
-            //System.out.println("Wave.equals false: waveStart");
+            //LOGGER.info("Wave.equals false: waveStart");
             return false;
         }
         if (this.waveAssignmentMethod != other.waveAssignmentMethod) {
-            //System.out.println("Wave.equals false: waveAssignmentMethod");
+            //LOGGER.info("Wave.equals false: waveAssignmentMethod");
             return false;
         }
         if (!Objects.equals(this.wavePosition.getValue(), other.wavePosition.getValue())) {
-            //System.out.println("Wave.equals false: wavePosition");
+            //LOGGER.info("Wave.equals false: wavePosition");
             return false;
         }
-        //System.out.println("Wave.equals true");
+        //LOGGER.info("Wave.equals true");
         return true;
     }
     

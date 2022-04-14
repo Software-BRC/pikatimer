@@ -49,6 +49,7 @@ import org.h2.tools.Csv;
 
 @FXMLController("FXMLImportWizardView2.fxml")
 public class ImportWizardView2Controller {
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     @FXMLViewFlowContext
     private ViewFlowContext context;
     
@@ -57,7 +58,7 @@ public class ImportWizardView2Controller {
     
     @PostConstruct
     public void init() throws FlowException {
-        System.out.println("ImportWizardView2Controller.initialize()");
+        LOGGER.info("ImportWizardView2Controller.initialize()");
         ImportWizardData model = context.getRegisteredObject(ImportWizardData.class);
         //model.setFileName("Test2");
         
@@ -89,7 +90,7 @@ public class ImportWizardView2Controller {
         try {
              String result = new BufferedReader(new InputStreamReader(new FileInputStream(model.getFileName()),uft8Decoder)).lines().collect(Collectors.joining("\n"));
          } catch (Exception ex) {
-             System.out.println("Not UTF-8: " + ex.getMessage());
+             LOGGER.info("Not UTF-8: " + ex.getMessage());
              charset = "Cp1252"; // Windows standard txt file stuff
          }
         
@@ -101,7 +102,7 @@ public class ImportWizardView2Controller {
             ResultSetMetaData meta = rs.getMetaData();
             for (int i = 0; i < meta.getColumnCount(); i++) {
                 csvColumns.add(meta.getColumnLabel(i+1));
-                System.out.println(meta.getColumnLabel(i+1));
+                LOGGER.info(meta.getColumnLabel(i+1));
             }
             int numAdded = 0;
             while (rs.next()) { numAdded++; }
@@ -149,13 +150,13 @@ public class ImportWizardView2Controller {
                 else model.mapAttrib(csvAttr, comboBox.getSelectionModel().getSelectedItem().key.getValue());
             });
             for(AttributeMap entry: attList) {
-                //System.out.println("Does " + csvColumns.get(i).toLowerCase() + " contain " + entry.key.toString().toLowerCase());
+                //LOGGER.info("Does " + csvColumns.get(i).toLowerCase() + " contain " + entry.key.toString().toLowerCase());
                 if (csvColumns.get(i).toLowerCase().contains(entry.key.getValue().toLowerCase()) || 
                         entry.key.getValue().toLowerCase().contains(csvColumns.get(i).toLowerCase())) {
                     comboBoxes.get(i).setValue(entry);
                     if (entry.customKey >= 0) model.mapAttrib(csvAttr, entry.customKey.toString());
                     else model.mapAttrib(csvAttr,entry.key.getValue());
-                    //System.out.println("Import: " + csvColumns.get(i).toLowerCase() + " matches " + entry.key.getValue().toLowerCase() );
+                    //LOGGER.info("Import: " + csvColumns.get(i).toLowerCase() + " matches " + entry.key.getValue().toLowerCase() );
                 }
             }
         }

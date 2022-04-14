@@ -31,13 +31,13 @@ public class WaveStringConverter extends StringConverter<Wave> {
         if (w.getRace() == null) return w.getWaveName();
 
         if (w.getRace().wavesProperty().size() == 1 ) {
-            //System.out.println("WaveStringConverter returning " + w.getRace().getRaceName());
+            //LOGGER.info("WaveStringConverter returning " + w.getRace().getRaceName());
             return w.getRace().getRaceName();
         } else if (RaceDAO.getInstance().listRaces().size() == 1 ) {
-            //System.out.println("WaveStringConverter returning " + w.getWaveName());
+            //LOGGER.info("WaveStringConverter returning " + w.getWaveName());
             return w.getWaveName();
         } else {
-            //System.out.println("WaveStringConverter returning " +w.getRace().getRaceName() + " " + w.getWaveName());
+            //LOGGER.info("WaveStringConverter returning " +w.getRace().getRaceName() + " " + w.getWaveName());
             return w.getRace().getRaceName() + " " + w.getWaveName();
         }
     }
@@ -48,13 +48,13 @@ public class WaveStringConverter extends StringConverter<Wave> {
         if (w.getRace() == null) return w.getWaveName();
 
         if (w.getRace().wavesProperty().size() == 1 ) {
-            //System.out.println("WaveStringConverter returning " + w.getRace().getRaceName());
+            //LOGGER.info("WaveStringConverter returning " + w.getRace().getRaceName());
             return w.getRace().getRaceName();
         } else if (RaceDAO.getInstance().listRaces().size() == 1 ) {
-            //System.out.println("WaveStringConverter returning " + w.getWaveName());
+            //LOGGER.info("WaveStringConverter returning " + w.getWaveName());
             return w.getWaveName();
         } else {
-            //System.out.println("WaveStringConverter returning " +w.getRace().getRaceName() + " " + w.getWaveName());
+            //LOGGER.info("WaveStringConverter returning " +w.getRace().getRaceName() + " " + w.getWaveName());
             return w.getRace().getRaceName() + " " + w.getWaveName();
         } 
     }

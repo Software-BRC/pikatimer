@@ -16,6 +16,7 @@
  */
 package com.pikatimer.race;
 
+import java.util.logging.Logger;
 import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -31,7 +32,7 @@ import javax.persistence.Embeddable;
  */    
 @Embeddable 
 public class AgeGroupIncrement {
-
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     private final IntegerProperty startAgeProperty = new SimpleIntegerProperty();
     private final StringProperty endAgeProperty = new SimpleStringProperty(); 
     private final StringProperty nameProperty = new SimpleStringProperty();
@@ -65,7 +66,7 @@ public class AgeGroupIncrement {
         return nameProperty.getValueSafe(); 
     }
     public void setName(String i) {
-        System.out.println("AgeGroups.setAGIncrement() with " + i);
+        LOGGER.info("AgeGroups.setAGIncrement() with " + i);
         nameProperty.setValue(i);
     }
     public StringProperty nameProperty() {

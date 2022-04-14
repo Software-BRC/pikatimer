@@ -39,21 +39,21 @@ public class PikaFilePathWrapper extends FilePathWrapper {
     }
     @Override
     public FilePathWrapper wrap(FilePath base) {
-        //System.out.println("\nPikaFilePathWrapper:wrap() called with " + base.toString());
+        //LOGGER.info("\nPikaFilePathWrapper:wrap() called with " + base.toString());
         PikaFilePathWrapper wrapper = (PikaFilePathWrapper) super.wrap(base);
         wrapper.name = getPrefix() + base.toString().replaceAll(".pika$", ".mv.db");
-        //System.out.println("PikaFilePathWrapper:wrap() returning " + wrapper.name);
+        //LOGGER.info("PikaFilePathWrapper:wrap() returning " + wrapper.name);
         return wrapper;
     }
 
     @Override
     protected FilePath unwrap(String path) {
-        //System.out.println("\nPikaFilePathWrapper:unwrap() called with " + path);
+        //LOGGER.info("\nPikaFilePathWrapper:unwrap() called with " + path);
         String newName = path.substring(getScheme().length() + 1);
-        //System.out.println("PikaFilePathWrapper:unwrap() newName is now " + newName);
+        //LOGGER.info("PikaFilePathWrapper:unwrap() newName is now " + newName);
 
         newName = newName.replaceAll(".mv.db$", ".pika");
-        //System.out.println("PikaFilePathWrapper:unwrap() returning " + newName);
+        //LOGGER.info("PikaFilePathWrapper:unwrap() returning " + newName);
         return FilePath.get(newName);
     }
 

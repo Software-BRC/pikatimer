@@ -256,7 +256,7 @@ public class Result {
     
     public ObjectProperty<Duration> splitTimeByIDProperty(Integer splitID) {
         if (!splitPropertyMap.containsKey(splitID)) {
-            //System.out.println("Split id " + splitID + " not found, adding one in...");
+            //LOGGER.info("Split id " + splitID + " not found, adding one in...");
             splitPropertyMap.put(splitID, new SimpleObjectProperty(Duration.ofNanos(Long.MAX_VALUE)));
         } 
         return splitPropertyMap.get(splitID);
@@ -265,10 +265,10 @@ public class Result {
     public void recalcTimeProperties(){
         if (pendingRecalc){
             
-            //System.out.println("Result::recalcTimeProperties for bib " + bib.get());
-//            System.out.println(" StartDuration: " + startDuration.toString());
-//            System.out.println(" waveStartDuration: " + waveStartDuration.toString());
-//            System.out.println(" finishDuration: " + finishDuration.toString());
+            //LOGGER.info("Result::recalcTimeProperties for bib " + bib.get());
+//            LOGGER.info(" StartDuration: " + startDuration.toString());
+//            LOGGER.info(" waveStartDuration: " + waveStartDuration.toString());
+//            LOGGER.info(" finishDuration: " + finishDuration.toString());
 
             if (!startDuration.equals(startDurationProperty.get())) startDurationProperty.set(startDuration);
             if (!waveStartDuration.equals(waveStartDurationProperty.get())) waveStartDurationProperty.set(waveStartDuration);
@@ -296,8 +296,8 @@ public class Result {
             
             
 //            
-//            System.out.println(" chipTime: " + finishDurationProperty.get().toString());
-//            System.out.println(" gunTime: " + finishGunDurationProperty.get().toString());
+//            LOGGER.info(" chipTime: " + finishDurationProperty.get().toString());
+//            LOGGER.info(" gunTime: " + finishGunDurationProperty.get().toString());
             
             // now loop through and fix the splits...
             // missing splits are set to MAX_VALUE
@@ -319,7 +319,7 @@ public class Result {
             });
             
             revision.set(revision.get() + 1);
-            //System.out.println("Result revision is now " + revision.getValue().toString());
+            //LOGGER.info("Result revision is now " + revision.getValue().toString());
             pendingRecalc = false;
         }
     }

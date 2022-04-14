@@ -51,6 +51,7 @@ import org.h2.tools.Csv;
 
 @FXMLController("FXMLImportWizardView3.fxml")
 public class ImportWizardView3Controller {
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     @FXMLViewFlowContext
     private ViewFlowContext context;
     
@@ -60,7 +61,7 @@ public class ImportWizardView3Controller {
     
     @PostConstruct
     public void init() throws FlowException {
-        System.out.println("ImportWizardView3Controller.initialize()");
+        LOGGER.info("ImportWizardView3Controller.initialize()");
         ImportWizardData model = context.getRegisteredObject(ImportWizardData.class);
         // Take the csv file name and attribute map and start the import
         
@@ -98,14 +99,14 @@ public class ImportWizardView3Controller {
                 Map<String,Race> raceMap = new HashMap();
                 
                 if (model.getWaveAssignByAttribute()) {
-                    System.out.println("Setting up raceMap and waveMap");
+                    LOGGER.info("Setting up raceMap and waveMap");
                     RaceDAO.getInstance().listRaces().forEach(race -> {
                         raceMap.put(race.getRaceName(), race);
-                        System.out.println("Race \"" + race.getRaceName() + "\" added");
+                        LOGGER.info("Race \"" + race.getRaceName() + "\" added");
                     });
                     RaceDAO.getInstance().listWaves().forEach(wave -> {
                         waveMap.put(wave.getWaveName(), wave);
-                        System.out.println("Wave \"" + wave.getWaveName() + "\" added");
+                        LOGGER.info("Wave \"" + wave.getWaveName() + "\" added");
 
                     });
                     
@@ -115,23 +116,23 @@ public class ImportWizardView3Controller {
                 if (!participantDAO.listParticipants().isEmpty()) {
                     existingRunners = true;
                     // add check to see if we should clear first
-                    System.out.println("Import: dup property is " + model.duplicateHandlingProperty().getValue());
+                    LOGGER.info("Import: dup property is " + model.duplicateHandlingProperty().getValue());
                      if (model.clearExistingProperty().get()) {
                          updateMessage("Clearing the existing participants...");
                          participantDAO.blockingClearAll(); 
                      } else {
                          if (model.duplicateHandlingProperty().getValueSafe().equals("Ignore")) {
-                             System.out.println("Import: Ignore Duplicates");
+                             LOGGER.info("Import: Ignore Duplicates");
                              dupeCheck = true;
                              mergeDupes = false;
                          }
                          else if (model.duplicateHandlingProperty().getValueSafe().equals("Merge")) {
-                             System.out.println("Import: Merge Duplicates");
+                             LOGGER.info("Import: Merge Duplicates");
                              dupeCheck = true;
                              mergeDupes = true;
                          }
                          else if (model.duplicateHandlingProperty().getValueSafe().equals("Import")) {
-                             System.out.println("Import: Import Duplicates");
+                             LOGGER.info("Import: Import Duplicates");
                              dupeCheck = false;
                          }
                      }
@@ -147,7 +148,7 @@ public class ImportWizardView3Controller {
                try {
                     String result = new BufferedReader(new InputStreamReader(new FileInputStream(model.getFileName()),uft8Decoder)).lines().collect(Collectors.joining("\n"));
                 } catch (Exception ex) {
-                    System.out.println("Not UTF-8: " + ex.getMessage());
+                    LOGGER.info("Not UTF-8: " + ex.getMessage());
                     charset = "Cp1252"; // Windows standard txt file stuff
                 }
                 
@@ -161,11 +162,11 @@ public class ImportWizardView3Controller {
                             String key = p.getFirstName()+p.getLastName() + p.getAge()+p.getSex();
                             key = key.toLowerCase();
                             existingMap.put(key, p);
-                            System.out.println("Added Key " + key);
+                            LOGGER.info("Added Key " + key);
                         });
                         
                     }
-                    System.out.println("ExistingMap size: " + existingMap.size());
+                    LOGGER.info("ExistingMap size: " + existingMap.size());
                     
                     while (rs.next()) {
                         numAdded++; 
@@ -178,7 +179,7 @@ public class ImportWizardView3Controller {
                         for (int i = 0; i < meta.getColumnCount(); i++) {
                             if (mapping.get(meta.getColumnLabel(i+1)) != null && !"".equals(rs.getString(i+1))) {
                                 String key = mapping.get(meta.getColumnLabel(i+1));
-                                System.out.println(rs.getString(i+1) + " -> " + key);
+                                LOGGER.info(rs.getString(i+1) + " -> " + key);
                                 if (key.equals("WAVE")) {
                                     pendingWave = rs.getString(i+1);
                                 } else if (key.equals("RACE")) {
@@ -195,14 +196,14 @@ public class ImportWizardView3Controller {
                         
                         String key = p.getFirstName()+p.getLastName() + p.getAge()+p.getSex();
                         key = key.toLowerCase();
-                        System.out.println("Looking for key " + key);
+                        LOGGER.info("Looking for key " + key);
                         if (dupeCheck && existingMap.containsKey(key)){
-                            System.out.println("Found existing key");
+                            LOGGER.info("Found existing key");
                             if (mergeDupes) {
                                 p = existingMap.get(key);
                                 if (attributes.containsKey("bib") && !p.getBib().equals(attributes.get("bib"))) {
                                     if (participantDAO.getParticipantByBib(attributes.get("bib")) != null) {
-                                        System.out.println("Duplicate bib found!");
+                                        LOGGER.info("Duplicate bib found!");
                                         attributes.put("bib", "Dupe: " + attributes.get("bib"));
                                     }
                                 }
@@ -220,13 +221,13 @@ public class ImportWizardView3Controller {
                                 updateProgress(numAdded,numToAdd);
                                 continue;
                             } else {
-                                System.out.println("Duplicate participant found, skipping");
+                                LOGGER.info("Duplicate participant found, skipping");
                                 updateMessage("Skipping " + p.getFirstName() + " " + p.getLastName() );
                                 updateProgress(numAdded,numToAdd);
                                 continue;
                             }
                         } else {
-                            System.out.println("Did not find an existing person");
+                            LOGGER.info("Did not find an existing person");
                         }
                         
                         if (participantDAO.getParticipantByBib(p.getBib()) != null) {
@@ -236,7 +237,7 @@ public class ImportWizardView3Controller {
                         if(model.getWaveAssignByBib()) {
                             p.setWaves(participantDAO.getWaveByBib(attributes.get("bib")));
                         } else if (model.getWaveAssignByAttribute()) {
-                            System.out.println("Assigning wave by attribute: \"" + pendingWave + "\" / \"" + pendingRace + "\"");
+                            LOGGER.info("Assigning wave by attribute: \"" + pendingWave + "\" / \"" + pendingRace + "\"");
                            if (pendingWave.isEmpty() && !pendingRace.isEmpty()){
                                if (raceMap.containsKey(pendingRace)){
                                    p.setWaves(raceMap.get(pendingRace).getWaves().get(0));
@@ -253,8 +254,8 @@ public class ImportWizardView3Controller {
                                    p.setWaves(raceMap.get(pendingRace).getWaves().get(0));
                                } // else they are screwed..... Sorry.... 
                            }
-                           if (p.wavesObservableList().size() > 0 ) System.out.println("Now in wave " + p.wavesObservableList().get(0).getWaveName());
-                           else System.out.println("Not in any wave/race!!!");
+                           if (p.wavesObservableList().size() > 0 ) LOGGER.info("Now in wave " + p.wavesObservableList().get(0).getWaveName());
+                           else LOGGER.info("Not in any wave/race!!!");
                         } else {
                             p.addWave(model.getAssignedWave()); 
                         }
@@ -264,7 +265,7 @@ public class ImportWizardView3Controller {
                         //TODO: City / State Title Case (if selected)
                         //TODO: Cleanup City/State (if zip specified)
                         
-                        //System.out.println("Adding " + newPerson.getFirstName() + " " + newPerson.getLastName() );
+                        //LOGGER.info("Adding " + newPerson.getFirstName() + " " + newPerson.getLastName() );
                         //participantDAO.addParticipant(newPerson);
                         
                         updateProgress(numAdded,numToAdd);
@@ -272,7 +273,7 @@ public class ImportWizardView3Controller {
                         
                     }
                 } catch (Exception ex) {
-                    System.out.println("Something bad happened... ");
+                    LOGGER.info("Something bad happened... ");
                     Logger.getLogger(ImportWizardView3Controller.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 updateMessage("Saving...");

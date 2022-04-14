@@ -16,6 +16,7 @@
  */
 package com.pikatimer.results;
 
+import java.util.logging.Logger;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -40,7 +41,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name="race_output_targets")
 public class RaceOutputTarget {
     
-        
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     private final IntegerProperty IDProperty = new SimpleIntegerProperty();
     private final StringProperty uuidProperty = new SimpleStringProperty(java.util.UUID.randomUUID().toString());
     private final StringProperty outputFilenameProperty = new SimpleStringProperty();
@@ -77,12 +78,12 @@ public class RaceOutputTarget {
     //    uuid varchar,
     @Column(name="uuid")
     public String getUUID() {
-       // System.out.println("Participant UUID is " + uuidProperty.get());
+       // LOGGER.info("Participant UUID is " + uuidProperty.get());
         return uuidProperty.getValue(); 
     }
     public void setUUID(String  uuid) {
         uuidProperty.setValue(uuid);
-        //System.out.println("Participant UUID is now " + uuidProperty.get());
+        //LOGGER.info("Participant UUID is now " + uuidProperty.get());
     }
     public StringProperty uuidProperty() {
         return uuidProperty; 
@@ -127,16 +128,16 @@ public class RaceOutputTarget {
     }
     
     public void saveOutput(String s){
-        System.out.println("RaceOutputTarget.saveOutput() called");
+        LOGGER.info("RaceOutputTarget.saveOutput() called");
         outputDestination = ResultsDAO.getInstance().getReportDestinationByID(outputDestinationID);
         
         if (outputDestination != null && ! outputFilenameProperty.isEmpty().getValue()) 
             outputDestination.save(outputFilenameProperty.getValue(), s);
         
         if (outputDestination == null) 
-            System.out.println("RaceOutputTarget.saveOutput() outputDestination is NULL!" + outputDestinationID);
+            LOGGER.info("RaceOutputTarget.saveOutput() outputDestination is NULL!" + outputDestinationID);
         
         if (outputFilenameProperty.isEmpty().getValue()) 
-            System.out.println("RaceOutputTarget.saveOutput() outputFilenameProperty is empty!: " + outputFilenameProperty.getValueSafe());
+            LOGGER.info("RaceOutputTarget.saveOutput() outputFilenameProperty is empty!: " + outputFilenameProperty.getValueSafe());
     }
 }

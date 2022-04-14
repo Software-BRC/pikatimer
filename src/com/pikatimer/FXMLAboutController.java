@@ -20,14 +20,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
-
+import java.util.logging.Logger;
 /**
  * FXML Controller class
  *
  * @author John Garner <segfaultcoredump@gmail.com>
  */
 public class FXMLAboutController{
-
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     @FXML Label pikaVersionLabel;
     
     /**
@@ -45,7 +45,7 @@ public class FXMLAboutController{
         if (link.contains("(")) {
             link = link.replaceFirst("^.+\\(", "").replaceFirst("\\).*$", "");
         }
-        System.out.println("Hyperlink pressed: " + link);
+        LOGGER.info("Hyperlink pressed: " + link);
         Pikatimer.getInstance().getHostServices().showDocument(link);
     }
     

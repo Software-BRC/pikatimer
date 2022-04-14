@@ -52,7 +52,7 @@ public class AwardFilter {
     
     @Column(name="attribute")
     public String getAttribute() {
-        //System.out.println("AgeGroups.getAGIncrement() returning " + agIncrement);
+        //LOGGER.info("AgeGroups.getAGIncrement() returning " + agIncrement);
         return attributeProperty.getValue(); 
     }
     public void setAttribute(String i) {
@@ -64,7 +64,7 @@ public class AwardFilter {
 
     @Column(name="comparison_type")
     public String getComparisonType() {
-        //System.out.println("AgeGroups.getAGIncrement() returning " + agIncrement);
+        //LOGGER.info("AgeGroups.getAGIncrement() returning " + agIncrement);
         return comparisonTypeProperty.getValue(); 
     }
     public void setComparisonType(String i) {
@@ -76,7 +76,7 @@ public class AwardFilter {
     
     @Column(name="reference_value")
     public String getReferenceValue() {
-        //System.out.println("AgeGroups.getAGIncrement() returning " + agIncrement);
+        //LOGGER.info("AgeGroups.getAGIncrement() returning " + agIncrement);
         return referenceValueProperty.getValue(); 
     }
     public void setReferenceValue(String i) {
@@ -109,7 +109,7 @@ public class AwardFilter {
         else if (attribute.matches("^\\d+$")) value = p.getCustomAttribute(Integer.parseInt(attribute)).getValueSafe();
         else  pvalue = p.getNamedAttribute(attribute);
         
-        //System.out.println("filter() " + attribute + " " + comparisonType + " " + value + " " + pvalue);
+        //LOGGER.info("filter() " + attribute + " " + comparisonType + " " + value + " " + pvalue);
 
         // We are going to abuse the heck out of the Alphanumeic Cpmarator for now.
         // This should work for numbers, letters, and most other things.

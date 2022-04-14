@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -46,6 +47,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author jcgarner
  */
 public class AgeGroup implements RaceReportType {
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     Race race;
     
     // Defaults
@@ -97,7 +99,7 @@ public class AgeGroup implements RaceReportType {
     
     @Override
     public String process(List<ProcessedResult> prList, RaceReport rr) {
-        System.out.println("AgeGroup.process() Called... ");
+        LOGGER.info("AgeGroup.process() Called... ");
         String report = new String();
         
         race = rr.getRace();
@@ -215,7 +217,7 @@ public class AgeGroup implements RaceReportType {
         String dispFormat = race.getStringAttribute("TimeDisplayFormat");
         String roundMode = race.getStringAttribute("TimeRoundingMode");
         Pace pace = Pace.valueOf(race.getStringAttribute("PaceDisplayFormat"));
-        //System.out.println("Age Group Processing: Display Format: " + dispFormat + " Rounding " + roundMode);
+        //LOGGER.info("Age Group Processing: Display Format: " + dispFormat + " Rounding " + roundMode);
         
         Integer dispFormatLength;  // add a space
         if (dispFormat.contains("[HH:]")) dispFormatLength = dispFormat.length()-1; // get rid of the two brackets and add a space
@@ -326,7 +328,7 @@ public class AgeGroup implements RaceReportType {
             if (showGun && ! hideTime) chars.append(StringUtils.leftPad(DurationFormatter.durationToString(pr.getGunFinish(), dispFormat, roundMode), dispFormatLength));
             if (showPace && ! hideTime) chars.append(StringUtils.leftPad(pace.getPace(race.getRaceDistance().floatValue(), race.getRaceDistanceUnits(), pr.getChipFinish()),pace.getFieldWidth()+1));
 
-//            System.out.println("Results: " + r.getRaceName() + ": "
+//            LOGGER.info("Results: " + r.getRaceName() + ": "
 //                    + r.getParticipant().fullNameProperty().getValueSafe() 
 //                    + "(" + pr.getSex() + pr.getAGCode() + "): " 
 //                    + DurationFormatter.durationToString(pr.getChipFinish())

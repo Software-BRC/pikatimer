@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -60,7 +61,7 @@ import org.hibernate.annotations.GenericGenerator;
 @DynamicUpdate
 @Table(name="race_outputs")
 public class RaceReport {
-    
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     private final IntegerProperty IDProperty = new SimpleIntegerProperty();
     private final StringProperty uuidProperty = new SimpleStringProperty(java.util.UUID.randomUUID().toString());
     private final IntegerProperty raceProperty= new SimpleIntegerProperty();
@@ -101,12 +102,12 @@ public class RaceReport {
     //    uuid varchar,
     @Column(name="uuid")
     public String getUUID() {
-       // System.out.println("RaceReport UUID is " + uuidProperty.get());
+       // LOGGER.info("RaceReport UUID is " + uuidProperty.get());
         return uuidProperty.getValue(); 
     }
     public void setUUID(String  uuid) {
         uuidProperty.setValue(uuid);
-        //System.out.println("RaceReport UUID is now " + uuidProperty.get());
+        //LOGGER.info("RaceReport UUID is now " + uuidProperty.get());
     }
     public StringProperty uuidProperty() {
         return uuidProperty; 
@@ -145,9 +146,9 @@ public class RaceReport {
     public void setRaceOutputTargets(List<RaceOutputTarget> rr) {
         raceOutputTargetList = rr;
         if (rr == null) {
-            System.out.println("RaceReport.setRaceOutputTarget(list) called with null list");
+            LOGGER.info("RaceReport.setRaceOutputTarget(list) called with null list");
         } else {
-            System.out.println("RaceReport.setRaceOutputTargets(list) " + "( " + IDProperty.getValue().toString() + ")" + " now has " + raceOutputTargetList.size() + " Output Destinations");
+            LOGGER.info("RaceReport.setRaceOutputTargets(list) " + "( " + IDProperty.getValue().toString() + ")" + " now has " + raceOutputTargetList.size() + " Output Destinations");
             raceOutputTargets.setAll(rr);
         }
     }
@@ -191,7 +192,7 @@ public class RaceReport {
             if (attributes.containsKey(key)) {
                 intAttributes.put(key,Integer.parseUnsignedInt(attributes.get(key)));
             } else {
-                System.out.println("RaceAwards.getIntegerAtrribute key of " + key + " is NULL!");
+                LOGGER.info("RaceAwards.getIntegerAtrribute key of " + key + " is NULL!");
                 return null;
             }
         }
@@ -209,7 +210,7 @@ public class RaceReport {
             if (attributes.containsKey(key)) {
                 boolAttributes.put(key,Boolean.parseBoolean(attributes.get(key)));
             } else {
-                System.out.println("RaceAwards.getBooleanAtrribute key of " + key + " is NULL!");
+                LOGGER.info("RaceAwards.getBooleanAtrribute key of " + key + " is NULL!");
                 return null;
             }
         }
@@ -231,26 +232,26 @@ public class RaceReport {
     }
     
     public void processResultNow(List<ProcessedResult> r){
-        System.out.println("RaceReport.procesResultNow() Called... ");
+        LOGGER.info("RaceReport.procesResultNow() Called... ");
         if (race != null && reportType != null) {
             if (raceReportType == null || reportTypeChanged) {
                 raceReportType = reportType.getReportType();
                 raceReportType.init(race);
                 reportTypeChanged = false;
             }
-            System.out.println("RaceReport.procesResult() calling raceReportType.process()");
+            LOGGER.info("RaceReport.procesResult() calling raceReportType.process()");
             String output = raceReportType.process(r, this);
             
             // for each output portal, ship it...
             raceOutputTargets.forEach(ot -> {
-                System.out.println("RaceReport.procesResult() calling ot.saveOutput()");
+                LOGGER.info("RaceReport.procesResult() calling ot.saveOutput()");
                 ot.saveOutput(output);
             });
         }
     }
     public void processResultIfEnabled(List<ProcessedResult> r){
         // If we are enabled... do something
-        System.out.println("RaceReport.procesResult() Called... ");
+        LOGGER.info("RaceReport.procesResult() Called... ");
         if (getBooleanAttribute("enabled")) {
             processResultNow(r);
         }

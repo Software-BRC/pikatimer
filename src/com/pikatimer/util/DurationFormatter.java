@@ -33,7 +33,7 @@ public class DurationFormatter {
         // rm is the rounding mode. see java.math.RoundingMode for options
         Boolean isNegative = false;
         
-        //System.out.println("durationToString start with " + d.toNanos() + " and " + p.toString() + " or " + d.toString());
+        //LOGGER.info("durationToString start with " + d.toNanos() + " and " + p.toString() + " or " + d.toString());
         //String result = d.toString(); 
         //result = d.toString().replace("PT", "").replace("H",":").replace("M",":"); 
         if (d == null || d.isZero() || d.equals(Duration.ofNanos(Long.MAX_VALUE))) return "";
@@ -51,7 +51,7 @@ public class DurationFormatter {
         Integer t = d.getNano(); 
         //if (d.toNanos() == 0) return ""; 
         BigDecimal S = new BigDecimal(d.getNano()).divide(new BigDecimal(1000000000)).setScale(p, rm);
-        //System.out.println("DurationFormatter::durationToString: H:" + H.toString() + " M:" + M.toString() + " s:" + s.toString() + " S:" + S.toPlainString());
+        //LOGGER.info("DurationFormatter::durationToString: H:" + H.toString() + " M:" + M.toString() + " s:" + s.toString() + " S:" + S.toPlainString());
         
         if (p == 0 && S.compareTo(new BigDecimal(1)) == 0) {
             s+= 1;

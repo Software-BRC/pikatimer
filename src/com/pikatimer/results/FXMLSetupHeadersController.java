@@ -19,6 +19,7 @@ package com.pikatimer.results;
 import com.pikatimer.race.Race;
 import com.pikatimer.race.RaceDAO;
 import java.util.Optional;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -48,6 +49,7 @@ import javafx.stage.WindowEvent;
  * @author John Garner <segfaultcoredump@gmail.com>
  */
 public class FXMLSetupHeadersController {
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     Race race;
     
     @FXML Label raceLabel;
@@ -272,7 +274,7 @@ public class FXMLSetupHeadersController {
         
         copyFromChoiceBox.getSelectionModel().selectedItemProperty().addListener((ob, oldR, newR) -> {
             if (newR == null || newR == oldR) {
-                System.out.println("copyFromChoiceBox Listener: newR is null or equal to oldR");
+                LOGGER.info("copyFromChoiceBox Listener: newR is null or equal to oldR");
                 return;
             }
             
@@ -285,7 +287,7 @@ public class FXMLSetupHeadersController {
                 copyConfirmation.setHeaderText("Overwrite all...");
                 Optional<ButtonType> closeResponse = copyConfirmation.showAndWait();
                 if (ButtonType.OK.equals(closeResponse.get())) {
-                    System.out.println("copyFromChoiceBox Listener: copying from " + newR.getRaceName());
+                    LOGGER.info("copyFromChoiceBox Listener: copying from " + newR.getRaceName());
 
                     
                     if (newR.getStringAttribute("GACode") == null) newR.setStringAttribute("GACode","");

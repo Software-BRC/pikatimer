@@ -16,6 +16,7 @@
  */
 package com.pikatimer;
 
+import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -26,6 +27,12 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 
 /**
@@ -37,6 +44,7 @@ public class Pikatimer extends Application {
     //private final Event event = Event.getInstance(); 
     private static Stage mainStage;
     private static String jdbcURL; // Holds the jdbcURL for the open db
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     
     public static final String VERSION = "1.5.1";
     
@@ -102,14 +110,35 @@ public class Pikatimer extends Application {
         primaryStage.setScene(myScene);
         primaryStage.show();
         
-        System.out.println("Exiting Pikatimer.start()");
+        LOGGER.info("Exiting Pikatimer.start()");
     }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        System.setProperty("java.util.logging.SimpleFormatter.format", 
+            "%1$tF %1$tT %4$s %2$s %5$s%6$s%n");
+        SimpleFormatter simpleFormatter = new SimpleFormatter();
+        Handler consoleHandler = new ConsoleHandler();
+        consoleHandler.setLevel(Level.ALL);
+        LOGGER.addHandler(consoleHandler);
+        try {
+            Handler fileHandler = new FileHandler("./Pikatimer.log", false);
+            fileHandler.setFormatter(simpleFormatter);
+            fileHandler.setLevel(Level.ALL);
+            LOGGER.addHandler(fileHandler);
+        } catch (IOException ex) {
+            Logger.getLogger(Pikatimer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SecurityException ex) {
+            Logger.getLogger(Pikatimer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
         launch(args);
+        
+        
+        
     }
     
 }

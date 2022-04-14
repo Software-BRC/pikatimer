@@ -48,6 +48,7 @@ import org.hibernate.Session;
  * @author jcgarner
  */
 public class ParticipantDAO {
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     private static final ObservableList<Participant> participantsList = FXCollections.observableArrayList(Participant.extractor());
     private static final Map<String,Participant> Bib2ParticipantMap = new HashMap<>();
     private static final Map<Integer,Participant> ID2ParticipantMap = new HashMap<>(); 
@@ -134,13 +135,13 @@ public class ParticipantDAO {
 
                 Session s=HibernateUtil.getSessionFactory().getCurrentSession();
                 s.beginTransaction();
-                System.out.println("ParticipantDAO:: refreshParticipantsList Runing the Query");
+                LOGGER.info("ParticipantDAO:: refreshParticipantsList Runing the Query");
 
                 try {  
                     list=s.createQuery("from Participant").list();
                     attributeList=s.createQuery("from CustomAttribute").list();
 
-                    System.out.println("ParticipantDAO::refreshParticipantsList found " + list.size() + " Participants");
+                    LOGGER.info("ParticipantDAO::refreshParticipantsList found " + list.size() + " Participants");
                     //if(!participantsList.isEmpty()) participantsList.clear();
 
                     Platform.runLater(() -> {
@@ -155,7 +156,7 @@ public class ParticipantDAO {
                         ID2ParticipantMap.put(p.getID(),p);
                     });
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                    LOGGER.info(e.getMessage());
                 } 
                 s.getTransaction().commit();
                 participantsLoadedLatch.countDown();
@@ -265,7 +266,7 @@ public class ParticipantDAO {
     
     public void updateParticipant(Participant p) {
         if (p == null){
-            System.out.println("Cant save NULL!!!");
+            LOGGER.info("Cant save NULL!!!");
             return;
         }
         Session s=HibernateUtil.getSessionFactory().getCurrentSession();
@@ -274,7 +275,7 @@ public class ParticipantDAO {
         s.getTransaction().commit();
         if ( ! p.getBib().equals(Participant2BibMap.get(p))) {
             // bib number changed
-            System.out.println("bib Number Change... "); 
+            LOGGER.info("bib Number Change... "); 
             String oldBib = Participant2BibMap.get(p);
             Bib2ParticipantMap.remove(Participant2BibMap.get(p));
             Bib2ParticipantMap.put(p.getBib(), p);
@@ -334,11 +335,11 @@ public class ParticipantDAO {
         Set<Wave> waves = new HashSet<>();
         Map raceMap = new HashMap(); 
         
-        System.out.println("Only one wave to assign them to...");
+        LOGGER.info("Only one wave to assign them to...");
 
         // If there is only one...
         if (RaceDAO.getInstance().listWaves().size() == 1) {
-            System.out.println("Only one wave to assign them to...");
+            LOGGER.info("Only one wave to assign them to...");
             waves.add(RaceDAO.getInstance().listWaves().get(0));
             return waves;
         }
@@ -349,7 +350,7 @@ public class ParticipantDAO {
                 String end = i.getWaveAssignmentEnd(); 
                 if (!(start.isEmpty() && end.isEmpty()) && (comp.compare(start, bib) <= 0 || start.isEmpty()) && (comp.compare(end, bib) >= 0 || end.isEmpty())) {
                     if(!raceMap.containsKey(i.getRace())) {
-                        //System.out.println("Bib " + bibTextField.getText() + " matched wave " + i.getWaveName() + " results: "+ comp.compare(start, bibTextField.getText()) + " and " + comp.compare(end, bibTextField.getText()) );
+                        //LOGGER.info("Bib " + bibTextField.getText() + " matched wave " + i.getWaveName() + " results: "+ comp.compare(start, bibTextField.getText()) + " and " + comp.compare(end, bibTextField.getText()) );
                         raceMap.put(i.getRace(), true); 
                         waves.add(i); 
                     }

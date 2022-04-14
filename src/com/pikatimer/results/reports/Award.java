@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -47,6 +48,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author jcgarner
  */
 public class Award implements RaceReportType {
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     Race race;
     IntegerProperty fullNameLength = new SimpleIntegerProperty(10);
     List<ProcessedResult> prList;
@@ -83,7 +85,7 @@ public class Award implements RaceReportType {
     
     @Override
     public String process(List<ProcessedResult> resList, RaceReport rr) {
-        System.out.println("Award.process() Called... ");
+        LOGGER.info("Award.process() Called... ");
         race = rr.getRace(); 
         supportedOptions.keySet().forEach(k -> supportedOptions.put(k, rr.getBooleanAttribute(k)));
         

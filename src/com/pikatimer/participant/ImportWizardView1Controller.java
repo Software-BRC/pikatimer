@@ -1,3 +1,4 @@
+
 /* 
  * Copyright (C) 2017 John Garner
  *
@@ -24,6 +25,7 @@ import io.datafx.controller.flow.FlowException;
 import io.datafx.controller.flow.context.FXMLViewFlowContext;
 import io.datafx.controller.flow.context.ViewFlowContext;
 import java.io.File;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -41,7 +43,7 @@ import javax.annotation.PostConstruct;
 
 @FXMLController("FXMLImportWizardView1.fxml")
 public class ImportWizardView1Controller {
-    
+    private final static Logger LOGGER = Logger.getLogger("Pikatimer");
     @FXMLViewFlowContext private ViewFlowContext context;
     
     @FXML private Label fileStatusLabel;
@@ -63,7 +65,7 @@ public class ImportWizardView1Controller {
     
     @PostConstruct
     public void init() throws FlowException {
-        System.out.println("ImportWizardView1Controller.initialize()");
+        LOGGER.info("ImportWizardView1Controller.initialize()");
         
         // TODO: 
         cleanupCityCheckBox.disableProperty().set(true);
@@ -142,13 +144,13 @@ public class ImportWizardView1Controller {
         fileTextField.textProperty().addListener((ob, oldT, newT) -> {
             File file = new File(fileTextField.getText());
             if (file.exists() && file.isFile() && file.canRead()) {
-                System.out.println("  The file is good...");
+                LOGGER.info("  The file is good...");
                 fileStatusLabel.setText("");
 
                 model.nextButtonDisabledProperty().set(false);
                 model.setFileName(file.getAbsolutePath());
             } else {
-                System.out.println("  Unable to use this file");
+                LOGGER.info("  Unable to use this file");
                 if (! file.exists()) fileStatusLabel.setText("File does not exist");
                 else if (! file.isFile()) fileStatusLabel.setText("The path entered is not a regular file");
                 else if (!file.canRead()) fileStatusLabel.setText("Unable to read the file");
