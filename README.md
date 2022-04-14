@@ -61,3 +61,9 @@ To download, go to https://github.com/PikaTimer/pikatimer/releases/
 * Hibernate -- http://hibernate.org/
 * ControlsFX -- http://fxexperience.com/controlsfx/
 * And other Open Source / Public Domain applications
+
+## For development
+
+- You should use NetBeans for the development of this application.
+- You need Java JDK 8u112, [please download it from here](https://www.oracle.com/ar/java/technologies/javase/javase8-archive-downloads.html).
+- To edit JavaFX views you need Scene Builder 8.5 for Java 8, [download it from here](https://gluonhq.com/products/scene-builder/).
