@@ -151,10 +151,6 @@ public class OverallJSON implements RaceReportType{
          Map<String,List<String>> awardWinnersByBibMap = new HashMap();
          Map<String,Map<AwardCategory,AwardWinner>> awardWinnersDetailByBibMap = new HashMap();
         if (showAwards){
-            if(race.getAwards() == null){
-                LOGGER.log(Level.SEVERE,"No configure the adwards for race '" + race.getRaceName()+"'");
-                
-            }
             Map<AwardCategory,Map<String,List<AwardWinner>>> awardWinnersMap = race.getAwards().getAwardWinners(prList);
             StringBuilder awardPrintout = new StringBuilder();
             race.getAwards().awardCategoriesProperty().forEach(ac -> {
